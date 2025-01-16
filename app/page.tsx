@@ -134,6 +134,8 @@ export default function Home() {
     const controller = new AbortController()
     loadPosts()
     return () => controller.abort()
+
+    // do not add loadPosts as a dependency to avoid infinite loop
   }, [selectedSubreddit, sortBy])
 
   return (
@@ -158,17 +160,19 @@ export default function Home() {
           sidebarCollapsed ? 'md:ml-[60px]' : 'md:ml-[300px]'
         }`}
       >
-        <div className='px-4 pt-[64px] md:pt-16'>
+        <div className='px-4 pt-4'>
           {!selectedPostId ? (
             <div className='flex flex-col h-[calc(100vh-4rem)]'>
-              <div className='flex items-center justify-between py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:sticky md:top-16 z-40 mx-4'>
+              <div className='grid gap-6 lg:flex items-center justify-between py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:top-16 z-40 mx-4'>
                 <SubredditHeader
                   info={subredditInfo}
                   loading={loading}
                   error={error}
                 />
                 <div className='flex items-center gap-2'>
-                  <span className='text-sm font-medium'>Sort by</span>
+                  <span className='text-sm font-medium whitespace-nowrap'>
+                    Sort by
+                  </span>
                   <Select
                     value={sortBy}
                     onValueChange={(value) => setSortBy(value as SortBy)}
@@ -185,7 +189,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className='flex-1 overflow-hidden py-4'>
+              <div className='flex-1 lg:overflow-hidden py-4'>
                 {error ? (
                   <Card className='mb-4 border-muted'>
                     <CardContent className='flex flex-col items-center text-center p-8 space-y-4'>
@@ -209,7 +213,7 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className='h-[calc(100vh-5rem)] overflow-y-auto py-4'>
+            <div className='h-[calc(100vh-5rem)] overflow-y-auto'>
               <PostDetail
                 id={selectedPostId}
                 onBack={() => setSelectedPostId(null)}
