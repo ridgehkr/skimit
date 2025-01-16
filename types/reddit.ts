@@ -1,73 +1,87 @@
 export interface RedditPost {
-  id: string;
-  title: string;
-  author: string;
-  score: number;
-  num_comments: number;
-  url: string;
-  permalink: string;
-  created_utc: number;
-  subreddit: string;
-  selftext?: string;
-  is_video: boolean;
-  is_gallery?: boolean;
+  id: string
+  title: string
+  author: string
+  score: number
+  num_comments: number
+  url: string
+  permalink: string
+  created_utc: number
+  subreddit: string
+  selftext?: string
+  is_video: boolean
+  is_gallery?: boolean
   gallery_data?: {
     items: Array<{
-      media_id: string;
-      id: number;
-    }>;
-  };
+      media_id: string
+      id: number
+    }>
+  }
   media_metadata?: {
     [key: string]: {
-      status: string;
-      e: string;
-      m: string;
+      status: string
+      e: string
+      m: string
       p: Array<{
-        y: number;
-        x: number;
-        u: string;
-      }>;
+        y: number
+        x: number
+        u: string
+      }>
       s: {
-        y: number;
-        x: number;
-        u: string;
-      };
-    };
-  };
+        y: number
+        x: number
+        u: string
+      }
+    }
+  }
   media?: {
     reddit_video?: {
-      fallback_url: string;
-    };
-  };
+      fallback_url: string
+    }
+  }
+  preview?: {
+    images: Array<{
+      source: {
+        url: string
+        width: number
+        height: number
+      }
+      resolutions: Array<{
+        url: string
+        width: number
+        height: number
+      }>
+    }>
+  }
 }
 
 export interface RedditComment {
-  id: string;
-  author: string;
-  body: string;
-  score: number;
-  created_utc: number;
+  id: string
+  author: string
+  body: string
+  score: number
+  created_utc: number
   replies?: {
     data: {
       children: Array<{
-        data: RedditComment;
-      }>;
-    };
-  };
+        data: RedditComment
+      }>
+    }
+  }
 }
 
 export interface SubredditInfo {
-  display_name: string;
-  title: string;
-  public_description: string;
-  subscribers: number;
-  active_user_count: number;
-  created_utc: number;
-  over18: boolean;
-  description: string;
-  header_img?: string;
-  icon_img?: string;
-  banner_background_image?: string;
+  display_name: string
+  title: string
+  public_description: string
+  subscribers: number
+  active_user_count: number
+  created_utc: number
+  over18: boolean
+  description: string
+  header_img?: string
+  icon_img?: string
+  banner_background_image?: string
 }
 
 export type SortBy = 'hot' | 'new' | 'top'
