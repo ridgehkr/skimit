@@ -4,6 +4,7 @@ import { RedditPost } from '@/types/reddit'
 import { formatRedditDate } from '@/lib/utils/reddit-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -19,6 +20,17 @@ import { useRedditAuth } from '@/lib/auth/reddit-auth'
 interface PostCardProps {
   post: RedditPost
   onClick: () => void
+}
+
+interface GalleryMediaItem {
+  status: string
+  e: string
+  m: string
+  p: Array<{
+    y: number
+    x: number
+    u: string
+  }>
 }
 
 function getPostType(post: RedditPost) {
@@ -48,11 +60,18 @@ export function PostCard({ post, onClick }: PostCardProps) {
     post.preview?.images[0]?.resolutions[0]?.url.replace(/&amp;/g, '&')
 
   // For gallery posts, try to get the first image
+  function isGalleryMediaItem(item: any): item is GalleryMediaItem {
+    return item && typeof item === 'object' && 'p' in item
+  }
+
   const galleryFirstImage =
     post.is_gallery &&
     post.gallery_data?.items[0]?.media_id &&
     post.media_metadata?.[post.gallery_data.items[0].media_id]
-  const galleryThumbnail = galleryFirstImage?.p?.[0]?.u?.replace(/&amp;/g, '&')
+
+  const galleryThumbnail = isGalleryMediaItem(galleryFirstImage)
+    ? galleryFirstImage.p[0]?.u?.replace(/&amp;/g, '&')
+    : null
 
   return (
     <Card
@@ -75,15 +94,17 @@ export function PostCard({ post, onClick }: PostCardProps) {
 
           {(imgThumbnail || galleryThumbnail) && (
             <div className='flex-shrink-0'>
-              <img
-                src={imgThumbnail || galleryThumbnail}
+              <Image
+                src={imgThumbnail || galleryThumbnail || ''}
+                width={80}
+                height={80}
                 alt={post.title}
                 className='w-[80px] h-[80px] object-cover rounded-md'
               />
             </div>
           )}
           <div className='flex-1 min-w-0'>
-            <h3 className='font-semibold mb-1 truncate'>{post.title}</h3>
+            <h3 className='font-semibold mb-2'>{post.title}</h3>
             <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
               <div className='flex items-center gap-1'>
                 <TypeIcon className='h-3.5 w-3.5' />
