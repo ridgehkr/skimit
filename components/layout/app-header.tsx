@@ -20,9 +20,9 @@ export function AppHeader({ onOpenSidebar }: AppHeaderProps) {
 
         <div className='flex items-center gap-4'>
           {/* Desktop login button */}
-          <div className='hidden md:block'>
+          {/* <div className='hidden md:block'>
             <LoginButton />
-          </div>
+          </div> */}
 
           {/* Mobile menu button */}
           <Button

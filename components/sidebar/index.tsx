@@ -414,9 +414,9 @@ export function Sidebar({
           <div className='flex flex-col h-full'>
             <SheetHeader className='p-4 border-b'>
               <SheetTitle>Menu</SheetTitle>
-              <div className='mt-4'>
+              {/* <div className='mt-4'>
                 <LoginButton />
-              </div>
+              </div> */}
             </SheetHeader>
             {sidebarContent}
           </div>
