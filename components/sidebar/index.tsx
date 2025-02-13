@@ -9,30 +9,165 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { Separator } from '@/components/ui/separator'
 import {
   AArrowDown,
   ChevronLeft,
   ChevronRight,
-  Plus,
-  Check,
   Edit2,
+  GripVertical,
+  Plus,
+  Star,
+  StarOff,
+  Trash2,
 } from 'lucide-react'
-import { SubredditList } from './subreddit-list'
 import { SubredditSearch } from './subreddit-search'
 import { ThemeToggle } from './theme-toggle'
 import { LoginButton } from '@/components/auth/login-button'
-import { SavedSubreddit } from '@/lib/subreddits'
+import { SavedSubreddit, subredditStorage } from '@/lib/subreddits'
 import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
+import Image from 'next/image'
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { usePathname } from 'next/navigation'
+
+interface SortableItemProps {
+  id: string
+  subreddit: SavedSubreddit
+  isSelected: boolean
+  onToggleFavorite: () => void
+  onDelete: () => void
+  isCollapsed?: boolean
+  isEditMode?: boolean
+}
+
+function SortableItem({
+  id,
+  subreddit,
+  isSelected,
+  onToggleFavorite,
+  onDelete,
+  isCollapsed = false,
+  isEditMode = false,
+}: SortableItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  if (isCollapsed) {
+    return (
+      <div ref={setNodeRef} style={style}>
+        <Link
+          href={`/r/${subreddit.name}`}
+          className={cn(
+            buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
+            'w-10 h-10 rounded-lg'
+          )}
+          title={`r/${subreddit.name}`}
+        >
+          {subreddit.iconUrl ? (
+            <Image
+              width={20}
+              height={20}
+              src={subreddit.iconUrl}
+              alt={`r/${subreddit.name} icon`}
+              className='w-6 h-6 rounded-full'
+            />
+          ) : (
+            subreddit.name.charAt(0).toUpperCase()
+          )}
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className='flex items-center justify-between group'
+    >
+      <div className='flex items-center flex-1'>
+        {isEditMode && (
+          <Button
+            variant='ghost'
+            size='icon'
+            className='cursor-grab'
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className='h-4 w-4' />
+          </Button>
+        )}
+        <Link
+          href={`/r/${subreddit.name}`}
+          className={cn(
+            buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
+            'flex-1 justify-start font-normal gap-2'
+          )}
+        >
+          {subreddit.iconUrl ? (
+            <Image
+              width={20}
+              height={20}
+              src={subreddit.iconUrl}
+              alt={`r/${subreddit.name} icon`}
+              className='w-5 h-5 rounded-full'
+            />
+          ) : (
+            <div className='w-5 h-5 rounded-full bg-accent flex items-center justify-center text-xs'>
+              r/
+            </div>
+          )}
+          r/{subreddit.name}
+        </Link>
+      </div>
+
+      {isEditMode && (
+        <div className='flex'>
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={onToggleFavorite}
+            className={subreddit.isFavorite ? 'text-yellow-500' : ''}
+          >
+            {subreddit.isFavorite ? (
+              <StarOff className='h-4 w-4' />
+            ) : (
+              <Star className='h-4 w-4' />
+            )}
+          </Button>
+          <Button variant='ghost' size='icon' onClick={onDelete}>
+            <Trash2 className='h-4 w-4' />
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface SidebarProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  subreddits: SavedSubreddit[]
-  onSelectSubreddit: (subreddit: string) => void
-  onDeleteSubreddit: (subreddit: string) => void
   selectedSubreddit: string
-  onUpdateSubreddits: (subreddits: SavedSubreddit[]) => void
   onSubredditChange: (value: string) => void
   searchInput: string
   onSearch: (subredditName: string) => void
@@ -42,11 +177,7 @@ interface SidebarProps {
 export function Sidebar({
   open,
   onOpenChange,
-  subreddits,
-  onSelectSubreddit,
-  onDeleteSubreddit,
   selectedSubreddit,
-  onUpdateSubreddits,
   onSubredditChange,
   searchInput,
   onSearch,
@@ -56,52 +187,116 @@ export function Sidebar({
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showSearchModal, setShowSearchModal] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
-  const [editedSubreddits, setEditedSubreddits] = useState<SavedSubreddit[]>([])
+  const [subreddits, setSubreddits] = useState<SavedSubreddit[]>(() =>
+    subredditStorage.getSubreddits()
+  )
+
+  const pathname = usePathname()
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor)
+  )
 
   const handleCollapse = (collapsed: boolean) => {
     setIsTransitioning(true)
     setIsCollapsed(collapsed)
     onCollapse(collapsed)
-    // Reset the transitioning state after the animation completes
     setTimeout(() => {
       setIsTransitioning(false)
-    }, 300) // Match this with the transition duration
+    }, 300)
   }
 
   const handleSort = () => {
-    const sortedSubreddits = [
-      ...(isEditMode ? editedSubreddits : subreddits),
-    ].sort((a, b) => {
-      if (a.isFavorite !== b.isFavorite) {
-        return b.isFavorite ? 1 : -1
-      }
-      return a.name.localeCompare(b.name)
-    })
-    if (isEditMode) {
-      setEditedSubreddits(sortedSubreddits)
-    } else {
-      onUpdateSubreddits(sortedSubreddits)
-    }
+    const sorted = subredditStorage.sortAlphabetically()
+    setSubreddits(sorted)
   }
 
-  const handleEditModeToggle = () => {
-    if (isEditMode) {
-      // Save changes
-      onUpdateSubreddits(editedSubreddits)
-      setIsEditMode(false)
-    } else {
-      // Enter edit mode
-      setEditedSubreddits([...subreddits])
-      setIsEditMode(true)
-    }
+  const handleDeleteSubreddit = (name: string) => {
+    subredditStorage.remove(name)
+    setSubreddits(subredditStorage.getSubreddits())
   }
 
-  const handleUpdateSubreddits = (updatedSubreddits: SavedSubreddit[]) => {
-    if (isEditMode) {
-      setEditedSubreddits(updatedSubreddits)
-    } else {
-      onUpdateSubreddits(updatedSubreddits)
+  const handleToggleFavorite = (name: string) => {
+    subredditStorage.toggleFavorite(name)
+    setSubreddits(subredditStorage.getSubreddits())
+  }
+
+  const handleSubredditSearch = (subredditName: string) => {
+    onSearch(subredditName)
+    setShowSearchModal(false)
+    // Immediately update the subreddits list after adding a new one
+    setSubreddits(subredditStorage.getSubreddits())
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = subreddits.findIndex((s) => s.name === active.id)
+    const newIndex = subreddits.findIndex((s) => s.name === over.id)
+
+    const newSubreddits = [...subreddits]
+    const [movedItem] = newSubreddits.splice(oldIndex, 1)
+    newSubreddits.splice(newIndex, 0, movedItem)
+
+    // Update order while preserving favorite status
+    const updated = newSubreddits.map((sub, index) => ({
+      ...sub,
+      order: index,
+    }))
+
+    subredditStorage.saveSubreddits(updated)
+    setSubreddits(updated)
+  }
+
+  const favorites = subreddits
+    .filter((s) => s.isFavorite)
+    .sort((a, b) => a.order - b.order)
+  const others = subreddits
+    .filter((s) => !s.isFavorite)
+    .sort((a, b) => a.order - b.order)
+
+  const renderSubredditList = (items: SavedSubreddit[]) => {
+    if (isCollapsed) {
+      return items.map((subreddit) => (
+        <SortableItem
+          key={subreddit.name}
+          id={subreddit.name}
+          subreddit={subreddit}
+          isSelected={pathname.startsWith(`/r/${subreddit.name}`)}
+          onToggleFavorite={() => handleToggleFavorite(subreddit.name)}
+          onDelete={() => handleDeleteSubreddit(subreddit.name)}
+          isCollapsed={true}
+          isEditMode={isEditMode}
+        />
+      ))
     }
+
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={items.map((s) => s.name)}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((subreddit) => (
+            <SortableItem
+              key={subreddit.name}
+              id={subreddit.name}
+              subreddit={subreddit}
+              isSelected={pathname.startsWith(`/r/${subreddit.name}`)}
+              onToggleFavorite={() => handleToggleFavorite(subreddit.name)}
+              onDelete={() => handleDeleteSubreddit(subreddit.name)}
+              isEditMode={isEditMode}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+    )
   }
 
   const sidebarContent = (
@@ -117,12 +312,11 @@ export function Sidebar({
           <div className='grid gap-2 w-full mb-6'>
             <div className='flex gap-2 items-center justify-between w-full'>
               <h2 className='text-xl font-semibold'>Subreddits</h2>
-
               <Button
                 variant='ghost'
                 size='sm'
                 onClick={() => setShowSearchModal(true)}
-                className='rounded-sm ml-auto'
+                className='rounded-sm'
               >
                 <Plus className='h-4 w-4 mr-2' />
                 Add
@@ -132,45 +326,54 @@ export function Sidebar({
         </div>
 
         <div className='flex flex-col grow'>
-          <SubredditList
-            subreddits={isEditMode ? editedSubreddits : subreddits}
-            onSelect={(name) => {
-              onSelectSubreddit(name)
-              onOpenChange(false)
-            }}
-            onDelete={onDeleteSubreddit}
-            selectedSubreddit={selectedSubreddit}
-            onUpdateSubreddits={handleUpdateSubreddits}
-            isCollapsed={isCollapsed}
-            isReorderMode={isEditMode}
-          />
-
-          <div className='flex gap-2 mt-auto items-center'>
-            <Button
-              variant={'ghost'}
-              size='sm'
-              onClick={handleEditModeToggle}
-              className={`rounded-sm ${isEditMode ? 'color-green-400' : ''}`}
-            >
-              {isEditMode ? (
-                <>
-                  <Check className='h-4 w-4 mr-2' />
-                  <span>Save</span>
-                </>
-              ) : (
-                <>
-                  <Edit2 className='h-4 w-4 mr-2' />
-                  <span>Edit</span>
-                </>
+          <ScrollArea className='h-[400px] px-1 -mx-1 flex-1 pb-4'>
+            <div
+              className={cn(
+                'transition-all duration-300',
+                isCollapsed ? 'opacity-0' : 'opacity-100'
               )}
-            </Button>
+            >
+              {favorites.length > 0 && (
+                <div className='mb-6'>
+                  <h3 className='text-sm font-medium text-muted-foreground mb-2'>
+                    Favorites
+                  </h3>
+                  <div className='space-y-1'>
+                    {renderSubredditList(favorites)}
+                  </div>
+                </div>
+              )}
 
-            {!isCollapsed && subreddits.length >= 2 && isEditMode && (
+              <div>
+                {!isCollapsed && others.length > 0 && (
+                  <h3 className='text-sm font-medium text-muted-foreground mb-2'>
+                    All Subreddits
+                  </h3>
+                )}
+                <div className='space-y-1'>{renderSubredditList(others)}</div>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <div className='flex mt-auto items-center justify-between gap-4'>
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={cn(
+                'text-muted-foreground hover:text-foreground',
+                isEditMode && 'text-primary hover:text-primary'
+              )}
+            >
+              <Edit2 className='h-4 w-4 mr-2' />
+              {isEditMode ? 'Done' : 'Edit'}
+            </Button>
+            {!isCollapsed && isEditMode && subreddits.length >= 2 && (
               <Button
                 variant='link'
                 size='sm'
                 onClick={handleSort}
-                className='text-muted-foreground hover:text-foreground p-0 h-auto ml-auto'
+                className='text-muted-foreground hover:text-foreground p-0 h-auto'
               >
                 <AArrowDown className='h-4 w-4 mr-2' />
                 Sort A-Z
@@ -187,6 +390,9 @@ export function Sidebar({
         )}
       >
         <div className='space-y-4'>
+          <div className='flex items-center justify-between'>
+            <ThemeToggle />
+          </div>
           <div className='text-xs text-muted-foreground space-y-2'>
             <div className='flex gap-3'>
               <a href='/about' className='hover:underline'>
@@ -195,7 +401,6 @@ export function Sidebar({
             </div>
             <p>&copy; 2025 SkimIt. All rights reserved.</p>
           </div>
-          <ThemeToggle />
         </div>
       </div>
     </div>
@@ -245,10 +450,7 @@ export function Sidebar({
         onOpenChange={setShowSearchModal}
         subreddit={searchInput}
         onSubredditChange={onSubredditChange}
-        onSearch={(name) => {
-          onSearch(name)
-          setShowSearchModal(false)
-        }}
+        onSearch={handleSubredditSearch}
       />
     </>
   )

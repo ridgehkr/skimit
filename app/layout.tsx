@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
+import { AppHeader } from '@/components/layout/app-header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,7 +25,9 @@ export default function RootLayout({
           defaultTheme='system'
           enableSystem
           disableTransitionOnChange
+          suppressHydrationWarning
         >
+          <AppHeader />
           {children}
           <Toaster
             theme='system'

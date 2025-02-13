@@ -6,11 +6,14 @@ import { Star, StarOff, Trash2, GripVertical } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
+import Image from 'next/image'
+import { buttonVariants } from '@/components/ui/button'
 
 interface SortableItemProps {
+  id: string
   subreddit: SavedSubreddit
   isSelected: boolean
-  onSelect: () => void
   onDelete: () => void
   onToggleFavorite: () => void
   isCollapsed?: boolean
@@ -18,9 +21,9 @@ interface SortableItemProps {
 }
 
 export function SortableItem({
+  id,
   subreddit,
   isSelected,
-  onSelect,
   onDelete,
   onToggleFavorite,
   isCollapsed = false,
@@ -28,7 +31,7 @@ export function SortableItem({
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-      id: subreddit.name,
+      id,
       disabled: !isReorderMode,
     })
 
@@ -44,15 +47,18 @@ export function SortableItem({
         style={style}
         className='flex items-center justify-center'
       >
-        <Button
-          variant={isSelected ? 'secondary' : 'ghost'}
-          size='icon'
-          className='w-10 h-10 rounded-lg'
-          onClick={onSelect}
+        <Link
+          href={`/r/${subreddit.name}`}
+          className={cn(
+            buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
+            'w-10 h-10 rounded-lg'
+          )}
           title={`r/${subreddit.name}`}
         >
           {subreddit.iconUrl ? (
-            <img
+            <Image
+              width={20}
+              height={20}
               src={subreddit.iconUrl}
               alt={`r/${subreddit.name} icon`}
               className='w-6 h-6 rounded-full'
@@ -60,7 +66,7 @@ export function SortableItem({
           ) : (
             subreddit.name.charAt(0).toUpperCase()
           )}
-        </Button>
+        </Link>
       </div>
     )
   }
@@ -83,13 +89,17 @@ export function SortableItem({
             <GripVertical className='h-4 w-4' />
           </Button>
         )}
-        <Button
-          variant={isSelected ? 'secondary' : 'ghost'}
-          className='flex-1 justify-start font-normal gap-2'
-          onClick={onSelect}
+        <Link
+          href={`/r/${subreddit.name}`}
+          className={cn(
+            buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
+            'flex-1 justify-start font-normal gap-2'
+          )}
         >
           {subreddit.iconUrl ? (
-            <img
+            <Image
+              width={20}
+              height={20}
               src={subreddit.iconUrl}
               alt={`r/${subreddit.name} icon`}
               className='w-5 h-5 rounded-full'
@@ -100,7 +110,7 @@ export function SortableItem({
             </div>
           )}
           r/{subreddit.name}
-        </Button>
+        </Link>
       </div>
 
       {isReorderMode && (

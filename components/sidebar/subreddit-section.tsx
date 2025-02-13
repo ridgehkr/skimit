@@ -1,79 +1,78 @@
-"use client";
+'use client'
 
-import { SavedSubreddit } from "@/lib/subreddits";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { SortableItem } from "./sortable-item";
-import { cn } from "@/lib/utils";
+import { SavedSubreddit } from '@/lib/subreddits'
+import { SortableItem } from './sortable-item'
+import { cn } from '@/lib/utils'
+import { Button } from '../ui/button'
+import { ChevronDown, ChevronRight, MoreVertical } from 'lucide-react'
+import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface SubredditSectionProps {
-  title?: string;
-  subreddits: SavedSubreddit[];
-  selectedSubreddit: string;
-  onSelect: (subreddit: string) => void;
-  onDelete: (subreddit: string) => void;
-  onUpdateSubreddits: (subreddits: SavedSubreddit[]) => void;
-  allSubreddits: SavedSubreddit[];
-  isCollapsed?: boolean;
-  isReorderMode?: boolean;
+  title: string
+  subreddits: SavedSubreddit[]
+  onDelete: (subreddit: string) => void
+  onToggleFavorite: (name: string) => void
+  isCollapsed?: boolean
+  isEditMode?: boolean
 }
 
 export function SubredditSection({
   title,
   subreddits,
-  selectedSubreddit,
-  onSelect,
   onDelete,
-  onUpdateSubreddits,
-  allSubreddits,
+  onToggleFavorite,
   isCollapsed = false,
-  isReorderMode = false,
+  isEditMode = false,
 }: SubredditSectionProps) {
-  // Only render if we have subreddits
+  const [isExpanded, setIsExpanded] = useState(true)
+
+  const pathname = usePathname()
+
   if (!subreddits?.length) {
-    return null;
+    return null
   }
 
   const items = (
-    <div className="space-y-1">
+    <div className='space-y-1'>
       {subreddits.map((subreddit) => (
         <SortableItem
           key={subreddit.name}
+          id={subreddit.name}
           subreddit={subreddit}
-          isSelected={selectedSubreddit === subreddit.name}
-          onSelect={() => onSelect(subreddit.name)}
+          isSelected={pathname.startsWith(`/r/${subreddit.name}`)}
           onDelete={() => onDelete(subreddit.name)}
-          onToggleFavorite={() => {
-            const updatedSubreddits = allSubreddits.map(s => 
-              s.name === subreddit.name 
-                ? { ...s, isFavorite: !s.isFavorite }
-                : s
-            );
-            onUpdateSubreddits(updatedSubreddits);
-          }}
+          onToggleFavorite={() => onToggleFavorite(subreddit.name)}
           isCollapsed={isCollapsed}
-          isReorderMode={isReorderMode}
+          isReorderMode={isEditMode}
         />
       ))}
     </div>
-  );
+  )
+
+  if (isCollapsed) {
+    return items
+  }
 
   return (
-    <div className="space-y-2">
-      {title && !isCollapsed && (
-        <h4 className="text-sm font-medium text-muted-foreground px-2 mb-2">
-          {title}
-        </h4>
-      )}
-      {isReorderMode ? (
-        <SortableContext
-          items={subreddits.map(s => s.name)}
-          strategy={verticalListSortingStrategy}
+    <div className='space-y-2'>
+      <div className='flex items-center justify-between px-2'>
+        <Button
+          variant='ghost'
+          size='sm'
+          className='p-0 h-6 font-medium text-muted-foreground hover:text-foreground'
+          onClick={() => setIsExpanded(!isExpanded)}
         >
-          {items}
-        </SortableContext>
-      ) : (
-        items
-      )}
+          {isExpanded ? (
+            <ChevronDown className='h-4 w-4 mr-1' />
+          ) : (
+            <ChevronRight className='h-4 w-4 mr-1' />
+          )}
+          {title}
+        </Button>
+      </div>
+
+      {isExpanded && <div className='pl-2'>{items}</div>}
     </div>
-  );
+  )
 }

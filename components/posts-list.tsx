@@ -26,7 +26,7 @@ export function PostsList({
   if (loading) {
     return (
       <div className='flex justify-center items-center h-full'>
-        <p>Loading posts...</p>
+        <p>Loading posts…</p>
       </div>
     )
   }
@@ -53,7 +53,7 @@ export function PostsList({
               {loadingMore ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Loading...
+                  Loading…
                 </>
               ) : (
                 'Load More Posts'
