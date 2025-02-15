@@ -2,7 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from 'sonner'
+// import { Toaster } from 'sonner'
 import { AppHeader } from '@/components/layout/app-header'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -25,14 +25,13 @@ export default function RootLayout({
           defaultTheme='system'
           enableSystem
           disableTransitionOnChange
-          suppressHydrationWarning
         >
-          <AppHeader />
+          <AppHeader onOpenSidebar={() => {}} />
           {children}
-          <Toaster
+          {/* <Toaster
             theme='system'
             className='[&_.success-icon]:!text-green-500'
-          />
+          /> */}
         </ThemeProvider>
       </body>
     </html>
