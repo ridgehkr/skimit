@@ -21,6 +21,7 @@ const nextConfig = {
   swcMinify: false,
   // Add trailing slash to ensure proper routing
   trailingSlash: true,
+  productionBrowserSourceMaps: true,
 }
 
 module.exports = nextConfig

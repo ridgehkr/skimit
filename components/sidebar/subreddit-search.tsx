@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -107,15 +107,7 @@ export function SubredditSearch({
         debouncedFetch(subreddit)
       }
     }
-  }, [
-    open,
-    setSuggestions,
-    setSelectedIndex,
-    debouncedFetch,
-    setLoading,
-    onSubredditChange,
-    subreddit,
-  ])
+  }, [open, debouncedFetch, onSubredditChange, subreddit, savedSubreddits])
 
   useEffect(() => {
     if (open) {
