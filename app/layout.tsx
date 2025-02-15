@@ -26,7 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppHeader onOpenSidebar={() => {}} />
+          <AppHeader />
           {children}
           {/* <Toaster
             theme='system'
