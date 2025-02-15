@@ -90,9 +90,9 @@ export function SubredditSearch({
     }
   }
 
-  const debouncedFetch = useCallback(
-    debounce((query: string) => fetchSuggestions(query), 300),
-    []
+  const debouncedFetch = debounce(
+    (query: string) => fetchSuggestions(query),
+    300
   )
 
   useEffect(() => {
@@ -107,7 +107,15 @@ export function SubredditSearch({
         debouncedFetch(subreddit)
       }
     }
-  }, [open, debouncedFetch, onSubredditChange])
+  }, [
+    open,
+    setSuggestions,
+    setSelectedIndex,
+    debouncedFetch,
+    setLoading,
+    onSubredditChange,
+    subreddit,
+  ])
 
   useEffect(() => {
     if (open) {
