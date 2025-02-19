@@ -8,6 +8,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    domains: ['skimit.app'],
   },
   // Disable type checking during build since we're in a constrained environment
   typescript: {

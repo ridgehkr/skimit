@@ -18,14 +18,15 @@ import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import debounce from 'lodash/debounce'
+import { useQuery } from '@tanstack/react-query'
 import { SavedSubreddit, subredditStorage } from '@/lib/subreddits'
 
 interface SubredditSearchProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   subreddit: string
-  onSubredditChange: (value: string) => void
-  onSearch: (subredditName: string) => void
+  // onSubredditChange: (value: string) => void
+  // onSearch: (subredditName: string) => void
 }
 
 interface SubredditSuggestion {
@@ -34,99 +35,80 @@ interface SubredditSuggestion {
   icon_img?: string
 }
 
+const fetchAutocompleteSuggestions = async (
+  query: string,
+  limit = 10
+): Promise<SubredditSuggestion[]> => {
+  if (!query.trim()) {
+    return []
+  }
+
+  const savedSubreddits = subredditStorage.getSubreddits()
+
+  const response = await fetch(
+    `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
+  )
+  const data = await response.json()
+  return (
+    data.data.children
+      .map((child: any) => ({
+        name: child.data.display_name,
+        subscribers: child.data.subscribers,
+        icon_img: child.data.icon_img,
+      }))
+
+      // filter out subreddit suggestions that are already saved
+      .filter(
+        (suggestion: SubredditSuggestion) =>
+          !savedSubreddits.some(
+            (saved: SavedSubreddit) =>
+              saved.name.toLowerCase() === suggestion.name.toLowerCase()
+          )
+      )
+
+      .slice(0, limit)
+  )
+}
+
 export function SubredditSearch({
   open,
   onOpenChange,
   subreddit,
-  onSubredditChange,
-  onSearch,
 }: SubredditSearchProps) {
-  const [suggestions, setSuggestions] = useState<SubredditSuggestion[]>([])
-  const [loading, setLoading] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const savedSubreddits = subredditStorage.getSubreddits()
 
-  const fetchSuggestions = async (query: string) => {
-    if (!query.trim()) {
-      setSuggestions([])
-      return
-    }
+  const debouncedFetch = debounce(fetchAutocompleteSuggestions, 300)
 
-    setLoading(true)
-    try {
-      const response = await fetch(
-        `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
-      )
-      const data = await response.json()
-      const subreddits = data.data.children
-        .map((child: any) => ({
-          name: child.data.display_name,
-          subscribers: child.data.subscribers,
-          icon_img: child.data.icon_img,
-        }))
-
-        // filter out subreddit suggestions that are already saved
-        .filter(
-          (suggestion: SubredditSuggestion) =>
-            !savedSubreddits.some(
-              (saved: SavedSubreddit) =>
-                saved.name.toLowerCase() === suggestion.name.toLowerCase()
-            )
-        )
-
-        .slice(0, 10)
-      setSuggestions(subreddits)
-      setSelectedIndex(-1)
-
-      console.log('saved vs. suggested', {
-        saved: savedSubreddits,
-        suggested: subreddits,
-      })
-    } catch (error) {
-      console.error('Error fetching suggestions:', error)
-      setSuggestions([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const debouncedFetch = debounce(
-    (query: string) => fetchSuggestions(query),
-    300
-  )
+  const {
+    data: suggestions = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['suggestions', subreddit],
+    queryFn: () => fetchAutocompleteSuggestions(subreddit),
+    enabled: !!subreddit,
+    staleTime: 30000,
+  })
 
   useEffect(() => {
     if (!open) {
-      setSuggestions([])
       setSelectedIndex(-1)
-      setLoading(false)
-      onSubredditChange('') // Clear the input
-    } else {
-      // Only fetch if there's an initial value
-      if (subreddit) {
-        debouncedFetch(subreddit)
-      }
+      // onSubredditChange('') // Clear the input
     }
-  }, [open, debouncedFetch, onSubredditChange, subreddit, savedSubreddits])
-
-  useEffect(() => {
-    if (open) {
-      debouncedFetch(subreddit)
-    }
-  }, [subreddit, open, debouncedFetch])
+  }, [open, setSelectedIndex])
 
   const handleSelect = (value: string) => {
     // Find the selected subreddit from suggestions
     const selectedSubreddit = suggestions.find(
-      (s) => s.name.toLowerCase() === value.toLowerCase()
+      (s: SubredditSuggestion) => s.name.toLowerCase() === value.toLowerCase()
     )
     if (selectedSubreddit) {
       // Save the subreddit with its icon
       subredditStorage.save(selectedSubreddit.name, selectedSubreddit.icon_img)
 
       // Update the parent component
-      onSubredditChange(selectedSubreddit.name)
-      onSearch(selectedSubreddit.name)
+      // onSubredditChange(selectedSubreddit.name)
+      // onSearch(selectedSubreddit.name)
 
       // Close the dialog
       onOpenChange(false)
@@ -173,10 +155,10 @@ export function SubredditSearch({
           <CommandInput
             placeholder='Search subreddits…'
             value={subreddit}
-            onValueChange={onSubredditChange}
+            onValueChange={debouncedFetch}
           />
           <CommandEmpty>
-            {loading ? (
+            {isLoading ? (
               <div className='flex items-center justify-center py-6'>
                 <Loader2 className='h-4 w-4 animate-spin' />
               </div>

@@ -12,7 +12,6 @@ export default function RootLayout({
   const [mounted, setMounted] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
   const router = useRouter()
 
   // Only render after first client-side mount to prevent hydration mismatch
@@ -30,8 +29,6 @@ export default function RootLayout({
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
         selectedSubreddit={''}
-        onSubredditChange={setSearchInput}
-        searchInput={searchInput}
         onSearch={(subreddit) => router.push(`/r/${subreddit}`)}
         onCollapse={setSidebarCollapsed}
       />

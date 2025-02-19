@@ -168,8 +168,6 @@ interface SidebarProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   selectedSubreddit: string
-  onSubredditChange: (value: string) => void
-  searchInput: string
   onSearch: (subredditName: string) => void
   onCollapse: (collapsed: boolean) => void
 }
@@ -178,8 +176,6 @@ export function Sidebar({
   open,
   onOpenChange,
   selectedSubreddit,
-  onSubredditChange,
-  searchInput,
   onSearch,
   onCollapse,
 }: SidebarProps) {
@@ -422,7 +418,6 @@ export function Sidebar({
           </div>
         </SheetContent>
       </Sheet>
-
       {/* Desktop Sidebar */}
       <div
         className={cn(
@@ -444,14 +439,12 @@ export function Sidebar({
         </Button>
         {sidebarContent}
       </div>
-
       <SubredditSearch
         open={showSearchModal}
         onOpenChange={setShowSearchModal}
-        subreddit={searchInput}
-        onSubredditChange={onSubredditChange}
-        onSearch={handleSubredditSearch}
+        subreddit={selectedSubreddit}
       />
+      {/* onSearch={handleSubredditSearch} */}
     </>
   )
 }

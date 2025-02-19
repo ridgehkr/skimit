@@ -109,7 +109,8 @@ export function PostCard({ post }: PostCardProps) {
                 <Image
                   src={thumbnail}
                   alt={post.title}
-                  fill
+                  width={80}
+                  height={80}
                   className='object-cover'
                   sizes='80px'
                   onError={(e) => {
