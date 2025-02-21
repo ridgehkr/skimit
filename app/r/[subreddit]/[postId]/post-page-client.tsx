@@ -11,7 +11,8 @@ import { PostContent } from '@/components/post-detail/post-content'
 import { PostDetailLoading } from '@/components/post-detail/loading'
 import { PostDetailError } from '@/components/post-detail/error'
 import { CommentProvider, useComments } from '@/lib/contexts/comment-context'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -92,15 +93,9 @@ function CommentSection({
   )
 }
 
-interface PostPageClientProps {
-  params: {
-    subreddit: string
-    postId: string
-  }
-}
-
-export default function PostPageClient({ params }: PostPageClientProps) {
+export default function PostPageClient() {
   const router = useRouter()
+  const { postId, subreddit } = useParams()
   const [mounted, setMounted] = useState(false)
   const [post, setPost] = useState<RedditPost | null>(null)
   const [comments, setComments] = useState<RedditComment[]>([])
@@ -121,14 +116,18 @@ export default function PostPageClient({ params }: PostPageClientProps) {
       setError(null)
 
       try {
-        const postData = await fetchRedditPost(params.postId)
+        if (typeof postId !== 'string') {
+          throw new Error('Invalid postId')
+        }
+
+        const postData = await fetchRedditPost(postId)
         if (!postData) {
           throw new Error('Post not found')
         }
         setPost(postData)
 
         setLoadingComments(true)
-        const commentsData = await fetchComments(params.postId, commentSort)
+        const commentsData = await fetchComments(postId, commentSort)
         setComments(commentsData)
         setLoadingComments(false)
       } catch (error) {
@@ -139,15 +138,16 @@ export default function PostPageClient({ params }: PostPageClientProps) {
     }
 
     loadPost()
-  }, [params.postId, mounted, commentSort])
+  }, [postId, mounted, commentSort])
 
   useEffect(() => {
     const loadComments = async () => {
-      if (!post || !mounted) return
-
-      setLoadingComments(true)
       try {
-        const commentsData = await fetchComments(params.postId, commentSort)
+        if (typeof postId !== 'string') {
+          throw new Error('Invalid postId')
+        }
+
+        const commentsData = await fetchComments(postId, commentSort)
         setComments(commentsData)
       } catch (error) {
         console.error('Error loading comments:', error)
@@ -159,7 +159,7 @@ export default function PostPageClient({ params }: PostPageClientProps) {
     if (post && !loading) {
       loadComments()
     }
-  }, [params.postId, commentSort, post, loading, mounted])
+  }, [postId, commentSort, post, loading, mounted])
 
   if (!mounted) {
     return null
@@ -182,12 +182,14 @@ export default function PostPageClient({ params }: PostPageClientProps) {
   return (
     <CommentProvider>
       <div className='space-y-4'>
-        <Button variant='ghost' onClick={() => router.back()} className='mb-4'>
-          <ArrowLeft className='h-4 w-4 mr-2' />
-          Back to r/{params.subreddit}
+        <Button variant='ghost' className='mb-4' asChild>
+          <Link href={`/r/${subreddit}`}>
+            <ArrowLeft className='h-4 w-4' />
+            Back to r/{subreddit}
+          </Link>
         </Button>
 
-        <Card>
+        <Card className='pb-6'>
           <PostHeader post={post} />
           <PostContent post={post} />
         </Card>

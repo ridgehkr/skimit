@@ -2,7 +2,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from 'sonner'
 import { AppHeader } from '@/components/layout/app-header'
 import { Providers } from '@/app/providers'
 
@@ -30,10 +29,6 @@ export default function RootLayout({
           <Providers>
             <AppHeader />
             {children}
-            <Toaster
-              theme='system'
-              className='[&_.success-icon]:!text-green-500'
-            />
           </Providers>
         </ThemeProvider>
       </body>

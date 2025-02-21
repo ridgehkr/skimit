@@ -16,7 +16,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  swcMinify: false,
   trailingSlash: true,
   productionBrowserSourceMaps: true,
 }

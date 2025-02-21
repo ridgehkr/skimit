@@ -14,7 +14,7 @@ interface RedditApiResponse {
 async function handleRedditResponse(response: Response) {
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error('Subreddit not found')
+      throw new Error('Reddit content not found')
     }
     throw new Error(`Reddit API error: ${response.status}`)
   }

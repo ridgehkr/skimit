@@ -4,6 +4,7 @@ interface SubredditPageProps {
   params: { subreddit: string }
 }
 
-export default function SubredditPage({ params }: SubredditPageProps) {
-  return <SubredditPageClient subreddit={params.subreddit} />
+export default async function SubredditPage({ params }: SubredditPageProps) {
+  const { subreddit } = await params
+  return <SubredditPageClient subreddit={subreddit} />
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Sidebar } from '@/components/sidebar'
-import { useRouter } from 'next/navigation'
 
 export default function RootLayout({
   children,
@@ -12,7 +11,6 @@ export default function RootLayout({
   const [mounted, setMounted] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const router = useRouter()
 
   // Only render after first client-side mount to prevent hydration mismatch
   useEffect(() => {
@@ -29,7 +27,6 @@ export default function RootLayout({
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
         selectedSubreddit={''}
-        onSearch={(subreddit) => router.push(`/r/${subreddit}`)}
         onCollapse={setSidebarCollapsed}
       />
 

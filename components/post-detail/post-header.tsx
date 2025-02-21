@@ -143,7 +143,7 @@ export function PostHeader({ post }: PostHeaderProps) {
 
       {isImage && (
         <div className='w-full max-w-[800px] mx-auto'>
-          <div className='bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden flex '>
+          <div className='bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden flex justify-center items-center'>
             <ImageModal src={post.url} alt={post.title} redditUrl={post.url} />
           </div>
         </div>

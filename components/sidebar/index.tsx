@@ -20,14 +20,15 @@ import {
   StarOff,
   Trash2,
 } from 'lucide-react'
-import { SubredditSearch } from './subreddit-search'
+import { SubredditSearch } from '@/components/sidebar/subreddit-search'
 import { ThemeToggle } from './theme-toggle'
-import { LoginButton } from '@/components/auth/login-button'
+// import { LoginButton } from '@/components/auth/login-button'
 import { SavedSubreddit, subredditStorage } from '@/lib/subreddits'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import {
   DndContext,
   closestCenter,
@@ -167,18 +168,10 @@ function SortableItem({
 interface SidebarProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  selectedSubreddit: string
-  onSearch: (subredditName: string) => void
   onCollapse: (collapsed: boolean) => void
 }
 
-export function Sidebar({
-  open,
-  onOpenChange,
-  selectedSubreddit,
-  onSearch,
-  onCollapse,
-}: SidebarProps) {
+export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showSearchModal, setShowSearchModal] = useState(false)
@@ -186,6 +179,8 @@ export function Sidebar({
   const [subreddits, setSubreddits] = useState<SavedSubreddit[]>(() =>
     subredditStorage.getSubreddits()
   )
+
+  const router = useRouter()
 
   const pathname = usePathname()
 
@@ -218,11 +213,14 @@ export function Sidebar({
     setSubreddits(subredditStorage.getSubreddits())
   }
 
-  const handleSubredditSearch = (subredditName: string) => {
-    onSearch(subredditName)
+  const handleSubredditSearchSubmit = (subredditName: string) => {
     setShowSearchModal(false)
+
     // Immediately update the subreddits list after adding a new one
     setSubreddits(subredditStorage.getSubreddits())
+
+    // redirect to newly-loaded subreddit
+    router.push(`/r/${subredditName}`)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -246,9 +244,12 @@ export function Sidebar({
     setSubreddits(updated)
   }
 
+  // subreddits marked as "favorite"
   const favorites = subreddits
     .filter((s) => s.isFavorite)
     .sort((a, b) => a.order - b.order)
+
+  // subreddits not marked as "favorite"
   const others = subreddits
     .filter((s) => !s.isFavorite)
     .sort((a, b) => a.order - b.order)
@@ -314,7 +315,7 @@ export function Sidebar({
                 onClick={() => setShowSearchModal(true)}
                 className='rounded-sm'
               >
-                <Plus className='h-4 w-4 mr-2' />
+                <Plus className='h-4 w-4' />
                 Add
               </Button>
             </div>
@@ -418,6 +419,7 @@ export function Sidebar({
           </div>
         </SheetContent>
       </Sheet>
+
       {/* Desktop Sidebar */}
       <div
         className={cn(
@@ -440,11 +442,10 @@ export function Sidebar({
         {sidebarContent}
       </div>
       <SubredditSearch
-        open={showSearchModal}
         onOpenChange={setShowSearchModal}
-        subreddit={selectedSubreddit}
+        open={showSearchModal}
+        onSearchSubmit={handleSubredditSearchSubmit}
       />
-      {/* onSearch={handleSubredditSearch} */}
     </>
   )
 }

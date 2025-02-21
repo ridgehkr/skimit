@@ -30,7 +30,15 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
 
     // Custom renderer to handle image URLs
     const renderer = new marked.Renderer()
-    renderer.image = (href, title, text) => {
+    renderer.image = ({
+      href,
+      title,
+      text,
+    }: {
+      href: string
+      title: string | null
+      text: string
+    }) => {
       try {
         // Decode URL-encoded characters
         const decodedHref = decodeURIComponent(href || '')
@@ -65,7 +73,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
 
   return (
     <div
-      className='prose dark:prose-invert max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 pb-2'
+      className='prose dark:prose-invert max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0'
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   )

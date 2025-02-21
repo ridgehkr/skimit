@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, KeyboardEvent, useCallback } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -24,9 +24,7 @@ import { SavedSubreddit, subredditStorage } from '@/lib/subreddits'
 interface SubredditSearchProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  subreddit: string
-  // onSubredditChange: (value: string) => void
-  // onSearch: (subredditName: string) => void
+  onSearchSubmit: (subredditName: string) => void
 }
 
 interface SubredditSuggestion {
@@ -62,7 +60,7 @@ const fetchAutocompleteSuggestions = async (
         (suggestion: SubredditSuggestion) =>
           !savedSubreddits.some(
             (saved: SavedSubreddit) =>
-              saved.name.toLowerCase() === suggestion.name.toLowerCase()
+              saved.name?.toLowerCase() === suggestion.name?.toLowerCase()
           )
       )
 
@@ -73,32 +71,43 @@ const fetchAutocompleteSuggestions = async (
 export function SubredditSearch({
   open,
   onOpenChange,
-  subreddit,
+  onSearchSubmit,
 }: SubredditSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [searchString, setSearchString] = useState('')
 
-  const debouncedFetch = debounce(fetchAutocompleteSuggestions, 300)
+  const debouncedFetch = debounce(fetchAutocompleteSuggestions, 1000)
+
+  const handleSearchInputChange = useCallback(
+    (value: string) => {
+      setSearchString(value)
+      debouncedFetch(value)
+    },
+    [setSearchString, debouncedFetch]
+  )
 
   const {
     data: suggestions = [],
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['suggestions', subreddit],
-    queryFn: () => fetchAutocompleteSuggestions(subreddit),
-    enabled: !!subreddit,
+    queryKey: ['subreddit-suggestions', searchString],
+    queryFn: () => fetchAutocompleteSuggestions(searchString),
+    enabled: !!searchString,
     staleTime: 30000,
   })
 
   useEffect(() => {
     if (!open) {
       setSelectedIndex(-1)
-      // onSubredditChange('') // Clear the input
     }
   }, [open, setSelectedIndex])
 
+  /**
+   * Select a subreddit from the suggestions list
+   * @param {string} value - The name of the subreddit
+   */
   const handleSelect = (value: string) => {
-    // Find the selected subreddit from suggestions
     const selectedSubreddit = suggestions.find(
       (s: SubredditSuggestion) => s.name.toLowerCase() === value.toLowerCase()
     )
@@ -107,17 +116,14 @@ export function SubredditSearch({
       subredditStorage.save(selectedSubreddit.name, selectedSubreddit.icon_img)
 
       // Update the parent component
-      // onSubredditChange(selectedSubreddit.name)
-      // onSearch(selectedSubreddit.name)
+      onSearchSubmit(selectedSubreddit.name)
 
       // Close the dialog
       onOpenChange(false)
     }
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!suggestions.length) return
-
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setSelectedIndex((prev) =>
@@ -154,8 +160,7 @@ export function SubredditSearch({
         >
           <CommandInput
             placeholder='Search subreddits…'
-            value={subreddit}
-            onValueChange={debouncedFetch}
+            onValueChange={handleSearchInputChange}
           />
           <CommandEmpty>
             {isLoading ? (
