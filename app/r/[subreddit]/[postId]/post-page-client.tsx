@@ -111,7 +111,7 @@ export default function PostPageClient({ params }: PostPageClientProps) {
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+  }, [setMounted])
 
   useEffect(() => {
     const loadPost = async () => {
@@ -139,7 +139,7 @@ export default function PostPageClient({ params }: PostPageClientProps) {
     }
 
     loadPost()
-  }, [params.postId, mounted])
+  }, [params.postId, mounted, commentSort])
 
   useEffect(() => {
     const loadComments = async () => {

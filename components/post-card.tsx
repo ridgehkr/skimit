@@ -16,21 +16,9 @@ import {
   Images,
 } from 'lucide-react'
 import { useRedditAuth } from '@/lib/auth/reddit-auth'
-import { cn } from '@/lib/utils'
 
 interface PostCardProps {
   post: RedditPost
-}
-
-interface GalleryMediaItem {
-  status: string
-  e: string
-  m: string
-  p: Array<{
-    y: number
-    x: number
-    u: string
-  }>
 }
 
 function getPostType(post: RedditPost) {
@@ -105,20 +93,19 @@ export function PostCard({ post }: PostCardProps) {
             )}
 
             {thumbnail && (
-              <div className='relative flex-shrink-0 w-[80px] h-[80px] rounded-md overflow-hidden bg-muted'>
+              <figure className='relative flex-shrink-0 m-0 w-[80px] h-[80px] rounded-md overflow-hidden bg-muted'>
                 <Image
                   src={thumbnail}
                   alt={post.title}
                   width={80}
                   height={80}
-                  className='object-cover'
                   sizes='80px'
+                  className='object-cover h-full w-full'
                   onError={(e) => {
-                    // Hide broken images
                     e.currentTarget.style.display = 'none'
                   }}
                 />
-              </div>
+              </figure>
             )}
 
             <div className='flex-1 min-w-0'>

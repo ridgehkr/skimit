@@ -1,7 +1,11 @@
-'use client';
+'use client'
 
 import PostPageClient from './post-page-client'
 
-export default function PostPage({ params }: { params: { subreddit: string; postId: string } }) {
+interface PostPageProps {
+  params: { subreddit: string; postId: string }
+}
+
+export default function PostPage({ params }: PostPageProps) {
   return <PostPageClient params={params} />
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { RedditPost } from '@/types/reddit'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { PostCard } from '@/components/post-card'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
@@ -12,7 +11,6 @@ interface PostsListProps {
   loadingMore: boolean
   hasMore: boolean
   onLoadMore: () => void
-  onPostClick: (postId: string) => void
 }
 
 export function PostsList({
@@ -21,7 +19,6 @@ export function PostsList({
   loadingMore,
   hasMore,
   onLoadMore,
-  onPostClick,
 }: PostsListProps) {
   if (loading) {
     return (
@@ -35,11 +32,7 @@ export function PostsList({
     <div className='h-full overflow-y-auto px-4 -mx-4'>
       <div className='space-y-4'>
         {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            onClick={() => onPostClick(post.id)}
-          />
+          <PostCard key={post.id} post={post} />
         ))}
 
         {hasMore && (

@@ -14,17 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { RedditPost, SortBy, SubredditInfo } from '@/types/reddit'
+import type { SortBy } from '@/types/reddit'
 import { useRouter } from 'next/navigation'
 
 interface SubredditPageClientProps {
-  params: {
-    subreddit: string
-  }
+  subreddit: string
 }
 
 export default function SubredditPageClient({
-  params,
+  subreddit,
 }: SubredditPageClientProps) {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -43,9 +41,9 @@ export default function SubredditPageClient({
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ['posts', params.subreddit, sortBy],
+    queryKey: ['posts', subreddit, sortBy],
     queryFn: ({ pageParam = undefined }: { pageParam?: string }) =>
-      fetchPosts(params.subreddit, sortBy, pageParam),
+      fetchPosts(subreddit, sortBy, pageParam),
     getNextPageParam: (lastPage) => lastPage?.[2] || null, // `after` value for pagination
     initialPageParam: undefined,
   })
@@ -104,9 +102,6 @@ export default function SubredditPageClient({
               loadingMore={isFetchingNextPage}
               hasMore={hasNextPage}
               onLoadMore={() => fetchNextPage()}
-              onPostClick={(postId) =>
-                router.push(`/r/${params.subreddit}/${postId}`)
-              }
             />
           )}
         </div>

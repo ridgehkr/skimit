@@ -1,7 +1,11 @@
-'use client';
+'use client'
 
 import SubredditPageClient from './subreddit-page-client'
 
-export default function SubredditPage({ params }: { params: { subreddit: string } }) {
-  return <SubredditPageClient params={params} />
+interface SubredditPageProps {
+  params: { subreddit: string }
+}
+
+export default function SubredditPage({ params }: SubredditPageProps) {
+  return <SubredditPageClient subreddit={params.subreddit} />
 }
