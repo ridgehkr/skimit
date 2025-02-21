@@ -1,5 +1,3 @@
-'use client'
-
 import PostPageClient from './post-page-client'
 
 interface PostPageProps {

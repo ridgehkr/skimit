@@ -1,5 +1,3 @@
-'use client'
-
 import SubredditPageClient from './subreddit-page-client'
 
 interface SubredditPageProps {

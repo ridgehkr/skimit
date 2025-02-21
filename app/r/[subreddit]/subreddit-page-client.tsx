@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { SortBy } from '@/types/reddit'
-import { useRouter } from 'next/navigation'
 
 interface SubredditPageClientProps {
   subreddit: string
@@ -24,7 +23,6 @@ interface SubredditPageClientProps {
 export default function SubredditPageClient({
   subreddit,
 }: SubredditPageClientProps) {
-  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('hot')
 
