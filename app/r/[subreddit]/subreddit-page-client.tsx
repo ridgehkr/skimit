@@ -58,7 +58,7 @@ export default function SubredditPageClient({
   return (
     <div className='pt-4'>
       <div className='flex flex-col h-[calc(100vh-64px)]'>
-        <div className='grid gap-6 lg:flex items-center justify-between py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:top-16 z-40 mx-4'>
+        <div className='grid gap-6 lg:flex items-center justify-between pb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:top-16 z-40 mx-4'>
           <SubredditHeader
             info={subredditInfo}
             loading={isLoading}

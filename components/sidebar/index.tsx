@@ -254,6 +254,8 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
     .filter((s) => !s.isFavorite)
     .sort((a, b) => a.order - b.order)
 
+  const hasSaved = subreddits.length > 0
+
   const renderSubredditList = (items: SavedSubreddit[]) => {
     if (isCollapsed) {
       return items.map((subreddit) => (
@@ -306,30 +308,54 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
             isCollapsed && 'hidden'
           )}
         >
-          <div className='grid gap-2 w-full mb-6'>
-            <div className='flex gap-2 items-center justify-between w-full'>
-              <h2 className='text-xl font-semibold'>Subreddits</h2>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setShowSearchModal(true)}
-                className='rounded-sm'
-              >
-                <Plus className='h-4 w-4' />
-                Add
-              </Button>
+          {hasSaved && (
+            <div className='grid gap-2 w-full mb-6'>
+              <div className='flex gap-2 items-center justify-between w-full'>
+                <h2 className='text-xl font-semibold'>Subreddits</h2>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => setShowSearchModal(true)}
+                  className='rounded-sm'
+                >
+                  <Plus className='h-4 w-4' />
+                  Add
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className='flex flex-col grow'>
-          <ScrollArea className='h-[400px] px-1 -mx-1 flex-1 pb-4'>
+          <ScrollArea
+            className={cn(
+              'h-[400px] px-1 -mx-1 flex-1 pb-4',
+              !hasSaved ? 'flex flex-col justify-center' : ''
+            )}
+          >
             <div
               className={cn(
                 'transition-all duration-300',
                 isCollapsed ? 'opacity-0' : 'opacity-100'
               )}
             >
+              {!hasSaved && (
+                <div className='flex flex-col items-center flex-grow justify-center h-full space-y-4 text-center'>
+                  <h3 className='scroll-m-20 text-lg font-medium tracking-tight'>
+                    Get started by adding your favorite subreddits
+                  </h3>
+
+                  <Button
+                    size='sm'
+                    onClick={() => setShowSearchModal(true)}
+                    className='rounded-sm'
+                  >
+                    <Plus className='h-4 w-4' />
+                    Add
+                  </Button>
+                </div>
+              )}
+
               {favorites.length > 0 && (
                 <div className='mb-6'>
                   <h3 className='text-sm font-medium text-muted-foreground mb-2'>
@@ -352,31 +378,33 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
             </div>
           </ScrollArea>
 
-          <div className='flex mt-auto items-center justify-between gap-4'>
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={cn(
-                'text-muted-foreground hover:text-foreground',
-                isEditMode && 'text-primary hover:text-primary'
-              )}
-            >
-              <Edit2 className='h-4 w-4 mr-2' />
-              {isEditMode ? 'Done' : 'Edit'}
-            </Button>
-            {!isCollapsed && isEditMode && subreddits.length >= 2 && (
+          {hasSaved && (
+            <div className='flex mt-auto items-center justify-between gap-4'>
               <Button
-                variant='link'
+                variant='ghost'
                 size='sm'
-                onClick={handleSort}
-                className='text-muted-foreground hover:text-foreground p-0 h-auto'
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={cn(
+                  'text-muted-foreground hover:text-foreground',
+                  isEditMode && 'text-primary hover:text-primary'
+                )}
               >
-                <AArrowDown className='h-4 w-4 mr-2' />
-                Sort A-Z
+                <Edit2 className='h-4 w-4 mr-2' />
+                {isEditMode ? 'Done' : 'Edit'}
               </Button>
-            )}
-          </div>
+              {!isCollapsed && isEditMode && subreddits.length >= 2 && (
+                <Button
+                  variant='link'
+                  size='sm'
+                  onClick={handleSort}
+                  className='text-muted-foreground hover:text-foreground p-0 h-auto'
+                >
+                  <AArrowDown className='h-4 w-4 mr-2' />
+                  Sort A-Z
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div

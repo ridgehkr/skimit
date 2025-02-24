@@ -33,7 +33,7 @@ export function ImageModal({ src, alt, redditUrl }: ImageModalProps) {
           />
         </div>
       </AlertDialogTrigger>
-      <AlertDialogContent className='max-w-[95vw] max-h-[95vh] p-0 overflow-hidden'>
+      <AlertDialogContent className=' p-0 overflow-hidden'>
         <div className='relative'>
           <div className='absolute top-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm flex items-center justify-between'>
             <AlertDialogTitle className='text-lg'>{alt}</AlertDialogTitle>
