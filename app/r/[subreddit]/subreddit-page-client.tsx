@@ -29,6 +29,8 @@ export default function SubredditPageClient({
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
+
+    window.scrollTo(0, 0)
   }, [])
 
   const {

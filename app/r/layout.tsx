@@ -26,7 +26,6 @@ export default function RootLayout({
       <Sidebar
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
-        selectedSubreddit={''}
         onCollapse={setSidebarCollapsed}
       />
 
