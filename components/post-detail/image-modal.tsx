@@ -8,8 +8,9 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { ExternalLink, X } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 interface ImageModalProps {
   src: string
@@ -33,20 +34,31 @@ export function ImageModal({ src, alt, redditUrl }: ImageModalProps) {
           />
         </div>
       </AlertDialogTrigger>
-      <AlertDialogContent className=' p-0 overflow-hidden'>
-        <div className='relative'>
-          <div className='absolute top-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm flex items-center justify-between'>
-            <AlertDialogTitle className='text-lg'>{alt}</AlertDialogTitle>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setOpen(false)}
-              className='h-8 w-8 rounded-full'
-            >
-              <X className='h-4 w-4' />
-              <span className='sr-only'>Close</span>
-            </Button>
-          </div>
+      <AlertDialogContent className='p-2 overflow-hidden max-w-[90vw] max-h-[90vh] sm:max-w-[90vw]'>
+        <Button variant='link' asChild>
+          <a
+            href={redditUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className={cn(
+              'flex items-center gap-2 text-sm absolute top-4 left-4 z-20'
+            )}
+          >
+            <ExternalLink className='h-4 w-4' />
+            View on Reddit
+          </a>
+        </Button>
+
+        <div className='relative z-10'>
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={() => setOpen(false)}
+            className='h-8 w-8 rounded-full absolute top-2 right-2 '
+          >
+            <X className='h-4 w-4' />
+            <span className='sr-only'>Close</span>
+          </Button>
 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -54,18 +66,11 @@ export function ImageModal({ src, alt, redditUrl }: ImageModalProps) {
             alt={alt}
             className='w-full h-full object-contain max-h-[calc(95vh-8rem)]'
           />
-          <div className='absolute bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm flex justify-center'>
-            <Button variant='link' className='p-0 h-auto' asChild>
-              <a
-                href={redditUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='flex items-center gap-2 text-sm'
-              >
-                <ExternalLink className='h-4 w-4' />
-                View on Reddit
-              </a>
-            </Button>
+
+          <div className='absolute bottom-[-1px] left-0 right-0 p-4 bg-background/80 backdrop-blur-sm flex flex-col align-center justify-center text-center gap-4'>
+            <AlertDialogTitle className='text-md font-normal'>
+              {alt}
+            </AlertDialogTitle>
           </div>
         </div>
       </AlertDialogContent>
