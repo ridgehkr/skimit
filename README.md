@@ -33,6 +33,7 @@ THese are planned future features of SkimIt. If you have other ideas or suggesti
 - [ ] Reddit authentication and account integration
 - [ ] Upvoting/downvoting
 - [ ] Adopt a more customized design, departing from the current shadcn/ui starter theme
+- [ ] Migrate saved subreddit management to persisted Zustand approach
 
 ---
 

@@ -15,7 +15,6 @@ import {
   FileText,
   Images,
 } from 'lucide-react'
-import { useRedditAuth } from '@/lib/auth/reddit-auth'
 
 interface PostCardProps {
   post: RedditPost
@@ -86,7 +85,6 @@ function getThumbnail(post: RedditPost): string | null {
  * @returns - A card component displaying the post excerpt
  */
 export function PostCard({ post }: PostCardProps) {
-  const { isAuthenticated } = useRedditAuth()
   const { icon: TypeIcon, label: typeLabel } = getPostType(post)
   const thumbnail = getThumbnail(post)
 
@@ -95,18 +93,6 @@ export function PostCard({ post }: PostCardProps) {
       <Card className='hover:bg-accent/50 transition-colors'>
         <CardContent className='p-4'>
           <div className='flex gap-3'>
-            {isAuthenticated && (
-              <div className='flex flex-col items-center gap-0.5'>
-                <button className='h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent'>
-                  <ArrowUpIcon className='h-4 w-4' />
-                </button>
-                <span className='text-sm font-medium'>{post.score}</span>
-                <button className='h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent'>
-                  <ArrowDownIcon className='h-4 w-4' />
-                </button>
-              </div>
-            )}
-
             {thumbnail && (
               <figure className='relative flex-shrink-0 m-0 w-[80px] h-[80px] rounded-md overflow-hidden bg-muted'>
                 <Image

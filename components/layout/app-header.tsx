@@ -3,6 +3,7 @@
 import { LibraryBig, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavStore } from '@/store/nav'
+import { SiGithub as Github } from 'react-icons/si'
 // import { LoginButton } from '@/components/auth/login-button'
 
 export function AppHeader() {
@@ -28,6 +29,18 @@ export function AppHeader() {
             <Menu className='h-6 w-6' />
           </Button>
         </div>
+
+        <Button variant='outline' asChild>
+          <a
+            href='https://github.com/ridgehkr/skimit'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='gap-2 ml-auto'
+          >
+            <Github className='h-4 w-4' />
+            GitHub
+          </a>
+        </Button>
       </div>
     </header>
   )

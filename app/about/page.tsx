@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Github } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { SiGithub as Github } from 'react-icons/si'
 import Link from 'next/link'
 
 export default function AboutPage() {
@@ -16,49 +16,54 @@ export default function AboutPage() {
         </Button>
       </Link>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className='text-2xl'>About</CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4 pb-6'>
-          <p>
-            SkimIt is an open-source Reddit client that provides a clean and
-            simple way to browse Reddit without all the extra noise. See it live
-            at{' '}
-            <a href='https://skimit.app' className='underline'>
-              skimit.app
-            </a>
-            .
-          </p>
+      <div className='space-y-6'>
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-2xl'>About</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-4 pb-6'>
+            <p>
+              SkimIt is an open-source Reddit client that provides a clean and
+              simple way to browse Reddit content and comments without all the
+              extra noise.
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* <Separator /> */}
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-2xl'>Contributing</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-4 pb-6'>
+            <p>
+              SkimIt is an open source project, and we welcome your
+              contributions! Get started by checking out the project on{' '}
+              <a
+                href='https://github.com/ridgehkr/skimit'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='underline'
+              >
+                GitHub
+              </a>
+              .
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-          <p className='text-sm'>
-            Built by{' '}
-            <a
-              href='https://calebpierce.dev'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='font-medium text-primary underline'
-            >
-              Caleb Pierce
-            </a>
-          </p>
-        </CardContent>
-      </Card>
-
-      <div className='text-center p-4 mt-6'>
-        <Button variant='outline' asChild>
+      <div className='text-center p-4 mt-6 space-y-4'>
+        <p className='text-sm'>
+          SkimIt is built and maintained by{' '}
           <a
-            href='https://github.com/ridgehkr/skimit'
-            target='_blank'
+            href='https://calebpierce.dev'
             rel='noopener noreferrer'
-            className='gap-2'
+            className='font-medium text-primary underline'
           >
-            <Github className='h-4 w-4' />
-            View on GitHub
+            Caleb Pierce
           </a>
-        </Button>
+          .
+        </p>
       </div>
     </div>
   )
