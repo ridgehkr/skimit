@@ -9,7 +9,6 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const [mounted, setMounted] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Only render after first client-side mount to prevent hydration mismatch
@@ -23,11 +22,7 @@ export default function RootLayout({
 
   return (
     <div className='min-h-screen flex flex-col'>
-      <Sidebar
-        open={sidebarOpen}
-        onOpenChange={setSidebarOpen}
-        onCollapse={setSidebarCollapsed}
-      />
+      <Sidebar onCollapse={setSidebarCollapsed} />
 
       <main
         className={`flex-1 transition-all duration-300 md:p-4 ${
