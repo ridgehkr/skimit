@@ -21,6 +21,11 @@ interface PostCardProps {
   post: RedditPost
 }
 
+/**
+ * Determine the type of Reddit post based on its populated properties
+ * @param {RedditPost} post - The Reddit post object
+ * @returns - An object containing the icon and label for the post type
+ */
 function getPostType(post: RedditPost) {
   if (post.is_gallery) {
     return { icon: Images, label: 'Gallery' }
@@ -37,6 +42,11 @@ function getPostType(post: RedditPost) {
   return { icon: LinkIcon, label: 'Link' }
 }
 
+/**
+ * Get the thumbnail image for a Reddit post
+ * @param {RedditPost} post - The Reddit post object
+ * @returns - The URL of the thumbnail image, or null if not found
+ */
 function getThumbnail(post: RedditPost): string | null {
   // First try to get the preview image
   if (post.preview?.images[0]?.resolutions) {
@@ -70,6 +80,11 @@ function getThumbnail(post: RedditPost): string | null {
   return null
 }
 
+/**
+ * Display a Reddit post excerpt in a card format
+ * @param post - The Reddit post object
+ * @returns - A card component displaying the post excerpt
+ */
 export function PostCard({ post }: PostCardProps) {
   const { isAuthenticated } = useRedditAuth()
   const { icon: TypeIcon, label: typeLabel } = getPostType(post)

@@ -13,6 +13,11 @@ interface PostsListProps {
   onLoadMore: () => void
 }
 
+/**
+ * Display a list of Reddit post excerpts in card format
+ * @param {PostsListProps} props - The component properties
+ * @returns - A component displaying a list of Reddit post excerpts
+ */
 export function PostsList({
   posts,
   loading,
