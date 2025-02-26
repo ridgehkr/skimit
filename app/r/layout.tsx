@@ -30,7 +30,7 @@ export default function RootLayout({
       />
 
       <main
-        className={`flex-1 transition-all duration-300 p-4 ${
+        className={`flex-1 transition-all duration-300 md:p-4 ${
           sidebarCollapsed ? 'md:ml-[60px]' : 'md:ml-[300px]'
         }`}
       >

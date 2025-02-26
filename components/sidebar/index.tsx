@@ -45,6 +45,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { usePathname } from 'next/navigation'
+import { useNavStore } from '@/store/nav'
 
 interface SortableItemProps {
   id: string
@@ -65,6 +66,8 @@ function SortableItem({
   isCollapsed = false,
   isEditMode = false,
 }: SortableItemProps) {
+  const { closeNav } = useNavStore()
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -82,6 +85,7 @@ function SortableItem({
             buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
             'w-10 h-10 rounded-lg'
           )}
+          onClick={closeNav}
           title={`r/${subreddit.name}`}
         >
           {subreddit.iconUrl ? (
@@ -118,8 +122,10 @@ function SortableItem({
             <GripVertical className='h-4 w-4' />
           </Button>
         )}
+
         <Link
           href={`/r/${subreddit.name}`}
+          onClick={closeNav}
           className={cn(
             buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
             'flex-1 justify-start font-normal gap-2'
@@ -166,12 +172,10 @@ function SortableItem({
 }
 
 interface SidebarProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
   onCollapse: (collapsed: boolean) => void
 }
 
-export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
+export function Sidebar({ onCollapse }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showSearchModal, setShowSearchModal] = useState(false)
@@ -179,6 +183,9 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
   const [subreddits, setSubreddits] = useState<SavedSubreddit[]>(() =>
     subredditStorage.getSubreddits()
   )
+
+  // mobile nav state from store
+  const { isOpen, closeNav } = useNavStore()
 
   const router = useRouter()
 
@@ -431,14 +438,19 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
     </div>
   )
 
+  /**
+   * Render the mobile sidebar
+   */
   return (
     <>
-      {/* Mobile Sidebar */}
-      <Sheet open={open} onOpenChange={onOpenChange}>
+      <Sheet
+        open={isOpen}
+        onOpenChange={(open: boolean) => !open && closeNav()}
+      >
         <SheetContent side='right' className='w-[300px] sm:w-[400px] p-0'>
           <div className='flex flex-col h-full'>
             <SheetHeader className='p-4 border-b'>
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle className='text-left'>Menu</SheetTitle>
               {/* <div className='mt-4'>
                 <LoginButton />
               </div> */}
@@ -469,6 +481,7 @@ export function Sidebar({ open, onOpenChange, onCollapse }: SidebarProps) {
         </Button>
         {sidebarContent}
       </div>
+
       <SubredditSearch
         onOpenChange={setShowSearchModal}
         open={showSearchModal}

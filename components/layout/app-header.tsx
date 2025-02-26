@@ -2,10 +2,12 @@
 
 import { LibraryBig, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useNavStore } from '@/store/nav'
 // import { LoginButton } from '@/components/auth/login-button'
-// import Link from 'next/link'
 
 export function AppHeader() {
+  const { openNav } = useNavStore()
+
   return (
     <header className='h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative md:sticky top-0 left-0 right-0 z-50'>
       <div className='h-full mx-auto px-4 flex items-center justify-between'>
@@ -21,7 +23,8 @@ export function AppHeader() {
           </div> */}
 
           {/* Mobile menu button */}
-          <Button variant='ghost' size='icon' className='md:hidden'>
+          <Button variant='ghost' className='md:hidden' onClick={openNav}>
+            <span>Subreddits</span>
             <Menu className='h-6 w-6' />
           </Button>
         </div>
