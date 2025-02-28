@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
-import { SiGithub as Github } from 'react-icons/si'
 import Link from 'next/link'
 
 export default function AboutPage() {
