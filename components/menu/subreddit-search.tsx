@@ -19,12 +19,12 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import debounce from 'lodash/debounce'
 import { useQuery } from '@tanstack/react-query'
-import { SavedSubreddit, subredditStorage } from '@/lib/subreddits'
+import { useSubredditStore, SavedSubreddit } from '@/store/subreddits'
+import { useRouter } from 'next/navigation'
 
 interface SubredditSearchProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSearchSubmit: (subredditName: string) => void
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
 }
 
 interface SubredditSuggestion {
@@ -35,13 +35,12 @@ interface SubredditSuggestion {
 
 const fetchAutocompleteSuggestions = async (
   query: string,
-  limit = 10
+  limit = 10,
+  subreddits: SavedSubreddit[] = []
 ): Promise<SubredditSuggestion[]> => {
   if (!query.trim()) {
     return []
   }
-
-  const savedSubreddits = subredditStorage.getSubreddits()
 
   const response = await fetch(
     `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
@@ -58,7 +57,7 @@ const fetchAutocompleteSuggestions = async (
       // filter out subreddit suggestions that are already saved
       .filter(
         (suggestion: SubredditSuggestion) =>
-          !savedSubreddits.some(
+          !subreddits.find(
             (saved: SavedSubreddit) =>
               saved.name?.toLowerCase() === suggestion.name?.toLowerCase()
           )
@@ -68,32 +67,40 @@ const fetchAutocompleteSuggestions = async (
   )
 }
 
-export function SubredditSearch({
-  open,
-  onOpenChange,
-  onSearchSubmit,
-}: SubredditSearchProps) {
+export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [searchString, setSearchString] = useState('')
+  const [debouncedSearchString, setDebouncedSearchString] = useState('')
+  const router = useRouter()
 
-  const debouncedFetch = debounce(fetchAutocompleteSuggestions, 1000)
+  const handleSubredditSearchSubmit = (subredditName: string) => {
+    setIsOpen(false)
 
-  const handleSearchInputChange = useCallback(
-    (value: string) => {
-      setSearchString(value)
-      debouncedFetch(value)
-    },
-    [setSearchString, debouncedFetch]
+    // redirect to newly-loaded subreddit
+    router.push(`/r/${subredditName}`)
+  }
+
+  const debouncedSetSearchString = useCallback(
+    debounce((value: string) => {
+      setDebouncedSearchString(value)
+    }, 500),
+    []
   )
+
+  const handleSearchInputChange = (value: string) => {
+    debouncedSetSearchString(value)
+  }
+
+  const { subreddits, addSubreddit } = useSubredditStore()
 
   const {
     data: suggestions = [],
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['subreddit-suggestions', searchString],
-    queryFn: () => fetchAutocompleteSuggestions(searchString),
-    enabled: !!searchString,
+    queryKey: ['subreddit-suggestions', debouncedSearchString],
+    queryFn: () =>
+      fetchAutocompleteSuggestions(debouncedSearchString, 10, subreddits),
+    enabled: !!debouncedSearchString,
     staleTime: 30000,
   })
 
@@ -113,13 +120,13 @@ export function SubredditSearch({
     )
     if (selectedSubreddit) {
       // Save the subreddit with its icon
-      subredditStorage.save(selectedSubreddit.name, selectedSubreddit.icon_img)
+      addSubreddit({
+        name: selectedSubreddit.name,
+        iconUrl: selectedSubreddit.icon_img,
+      })
 
       // Update the parent component
-      onSearchSubmit(selectedSubreddit.name)
-
-      // Close the dialog
-      onOpenChange(false)
+      handleSubredditSearchSubmit(selectedSubreddit.name)
     }
   }
 
@@ -149,7 +156,7 @@ export function SubredditSearch({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Add Subreddit</DialogTitle>

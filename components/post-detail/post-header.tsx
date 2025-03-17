@@ -101,7 +101,7 @@ export function PostHeader({ post }: PostHeaderProps) {
       )}
 
       {isGallery && galleryImages.length > 0 && (
-        <div className='w-full max-w-[800px] mx-auto'>
+        <div className='w-full max-w-[800px] mx-auto pb-4'>
           <div className='relative'>
             <Carousel setApi={setApi} className='w-full'>
               <CarouselContent>

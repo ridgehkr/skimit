@@ -4,7 +4,6 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppHeader } from '@/components/layout/app-header'
 import { Providers } from '@/app/providers'
-import { useState } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 

@@ -34,32 +34,34 @@ export function PostsList({
   }
 
   return (
-    <div className='h-full overflow-y-auto px-4 -mx-4'>
-      <div className='space-y-4'>
+    <div className='h-full px-4 -mx-4 space-y-4'>
+      <ul className='space-y-4'>
         {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
+          <li key={post.id}>
+            <PostCard post={post} />
+          </li>
         ))}
+      </ul>
 
-        {hasMore && (
-          <div className='flex justify-center py-4'>
-            <Button
-              variant='outline'
-              size='lg'
-              onClick={onLoadMore}
-              disabled={loadingMore}
-            >
-              {loadingMore ? (
-                <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Loading…
-                </>
-              ) : (
-                'Load More Posts'
-              )}
-            </Button>
-          </div>
-        )}
-      </div>
+      {hasMore && (
+        <div className='flex justify-center py-4'>
+          <Button
+            variant='outline'
+            size='lg'
+            onClick={onLoadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Loading…
+              </>
+            ) : (
+              'Load More Posts'
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

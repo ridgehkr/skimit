@@ -1,6 +1,6 @@
 'use client'
 
-import { marked } from 'marked'
+import { marked, type Tokens } from 'marked'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
 import { mangle } from 'marked-mangle'
 import { useMemo } from 'react'
@@ -61,6 +61,44 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
       }
     }
 
+    // apply tailwind classes to tables
+    renderer.table = (token: Tokens.Table) => {
+      const { header, rows } = token
+
+      const headerRow = header
+        .map(
+          (cell: Tokens.TableCell) =>
+            `<th class="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">${marked(
+              cell.text
+            )}</th>`
+        )
+        .join('')
+
+      const bodyRows = rows
+        .map(
+          (row) =>
+            `<tr class="m-0 border-t p-0 even:bg-muted">${row
+              .map(
+                (cell: Tokens.TableCell) =>
+                  `<td class="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">${marked(
+                    cell.text
+                  )}</td>`
+              )
+              .join('')}</tr>`
+        )
+        .join('')
+      return `
+      <div class="my-6 w-full overflow-y-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="m-0 border-t p-0 even:bg-muted">${headerRow}</tr>
+          </thead>
+          <tbody>${bodyRows}</tbody>
+        </table>
+      </div>
+      `
+    }
+
     try {
       return marked(content, { renderer })
     } catch (error) {
@@ -73,7 +111,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
 
   return (
     <div
-      className='prose dark:prose-invert max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0'
+      className='prose dark:prose-invert max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-a:underline [&_a]:underline'
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   )

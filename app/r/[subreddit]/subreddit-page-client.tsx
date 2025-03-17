@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { SortBy } from '@/types/reddit'
+import { useMobileNav } from '@/store/nav'
 
 interface SubredditPageClientProps {
   subreddit: string
@@ -25,10 +26,14 @@ export default function SubredditPageClient({
 }: SubredditPageClientProps) {
   const [mounted, setMounted] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('hot')
+  const { closeNav } = useMobileNav()
 
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
+
+    // if we're in mobile, we want to close the nav overlay when a new subreddit loads
+    closeNav()
 
     window.scrollTo(0, 0)
   }, [])
@@ -57,7 +62,7 @@ export default function SubredditPageClient({
 
   return (
     <div className='pt-4'>
-      <div className='flex flex-col h-[calc(100vh-64px)]'>
+      <div className='flex flex-col h-full'>
         <div className='grid gap-6 lg:flex items-center justify-between pb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:top-16 z-40 mx-4'>
           <SubredditHeader
             info={subredditInfo}
