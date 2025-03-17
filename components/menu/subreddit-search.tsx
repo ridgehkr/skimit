@@ -195,7 +195,7 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
                       width={24}
                       height={24}
                       src={suggestion.icon_img}
-                      alt={suggestion.name}
+                      alt={`/r/${suggestion.name} icon`}
                       className='w-6 h-6 rounded-full'
                     />
                   ) : (

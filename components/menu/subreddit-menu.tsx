@@ -152,14 +152,16 @@ export function SubredditMenu() {
           </div>
         )}
 
-        <Button
-          onClick={() => setShowSearchModal(true)}
-          className='rounded-sm'
-          variant='secondary'
-        >
-          <Plus className='h-4 w-4' />
-          <span>Add</span>
-        </Button>
+        {subreddits.length > 0 && (
+          <Button
+            onClick={() => setShowSearchModal(true)}
+            className='rounded-sm'
+            variant='secondary'
+          >
+            <Plus className='h-4 w-4' />
+            <span>Add</span>
+          </Button>
+        )}
       </div>
 
       {/* Toggle edit mode and sorting */}
