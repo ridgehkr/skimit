@@ -11,7 +11,7 @@ import { PostContent } from '@/components/post-detail/post-content'
 import { PostDetailLoading } from '@/components/post-detail/loading'
 import { PostDetailError } from '@/components/post-detail/error'
 import { CommentProvider, useComments } from '@/lib/contexts/comment-context'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Select,
@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { RedditPost, RedditComment, CommentSortBy } from '@/types/reddit'
+import { type SubredditPostProps } from './page'
 
 interface CommentSectionProps {
   comments: RedditComment[]
@@ -93,9 +94,11 @@ function CommentSection({
   )
 }
 
-export default function PostPageClient() {
+export default function PostPageClient({
+  postId,
+  subreddit,
+}: SubredditPostProps) {
   const router = useRouter()
-  const { postId, subreddit } = useParams()
   const [mounted, setMounted] = useState(false)
   const [post, setPost] = useState<RedditPost | null>(null)
   const [comments, setComments] = useState<RedditComment[]>([])
@@ -106,6 +109,8 @@ export default function PostPageClient() {
 
   useEffect(() => {
     setMounted(true)
+
+    window.scrollTo(0, 0) // Scroll to top on mount
   }, [setMounted])
 
   useEffect(() => {
@@ -191,7 +196,8 @@ export default function PostPageClient() {
 
         <Card className='pb-6'>
           <PostHeader post={post} />
-          <PostContent post={post} />
+
+          {post?.selftext && <PostContent post={post} />}
         </Card>
 
         <CommentSection

@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { SavedSubreddit } from '@/lib/subreddits'
+import { SavedSubreddit } from '@/store/subreddits'
 import { Star, StarOff, Trash2, GripVertical } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
