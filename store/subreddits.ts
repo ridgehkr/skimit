@@ -12,9 +12,11 @@ export interface SavedSubreddit {
 interface SubredditStoreState {
   hydrated: boolean
   subreddits: SavedSubreddit[]
+  allowNSFW: boolean
 }
 
 interface SubredditStoreActions {
+  setAllowNSFW: (allow: boolean) => void
   setHydrated: () => void
   addSubreddit: (
     subreddit: Omit<SavedSubreddit, 'order' | 'isFavorite'>
@@ -39,6 +41,16 @@ export const useSubredditStore = create<SubredditStore>()(
       // all saved subreddits
       subreddits: [],
 
+      // allow NSFW content
+      allowNSFW: false,
+
+      // Whether to allow NSFW content
+      setAllowNSFW: (allow: boolean) =>
+        set((state) => {
+          state.allowNSFW = allow
+        }),
+
+      // Set the hydrated flag to true. Called after the persisted state is retrieved; used to prevent hydration mismatch
       setHydrated: () =>
         set((state) => {
           state.hydrated = true
