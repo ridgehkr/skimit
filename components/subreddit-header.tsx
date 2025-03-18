@@ -80,22 +80,28 @@ export function SubredditHeader({
         </p>
       )}
 
-      <div className='flex flex-wrap gap-6 text-sm'>
+      <div className='flex flex-wrap gap-x-6 gap-y-4 text-sm'>
         <div className='flex items-center gap-2'>
           <Users className='h-4 w-4' />
-          <span className='font-medium'>{formatNumber(info.subscribers)}</span>
-          <span className='text-muted-foreground'>members</span>
+          <span className='inline-flex gap-1 white-space-nowrap'>
+            <span className='font-medium'>
+              {formatNumber(info.subscribers)}
+            </span>
+            <span className='text-muted-foreground'>members</span>
+          </span>
         </div>
         <div className='flex items-center gap-2'>
           <Clock className='h-4 w-4' />
-          <span className='font-medium'>
-            {formatNumber(info.active_user_count)}
+          <span className='white-space-nowrap inline-flex gap-1'>
+            <span className='font-medium'>
+              {formatNumber(info.active_user_count)}
+            </span>
+            <span className='text-muted-foreground'>online</span>
           </span>
-          <span className='text-muted-foreground'>online</span>
         </div>
         <div className='flex items-center gap-2'>
           <Calendar className='h-4 w-4' />
-          <span className='text-muted-foreground'>
+          <span className='text-muted-foreground white-space-nowrap'>
             Created {formatRedditDate(info.created_utc)}
           </span>
         </div>

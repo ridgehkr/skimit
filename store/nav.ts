@@ -1,13 +1,18 @@
 import { create } from 'zustand'
 
 interface NavState {
-  // whether the navigation menu is open or closed
+  // is the navigation menu currently open
   isOpen: boolean
 }
 
 interface NavActions {
+  // switch the navigation menu between open and closed
   toggleNav: () => void
+
+  // open the navigation menu
   openNav: () => void
+
+  // close the navigation menu
   closeNav: () => void
 }
 
