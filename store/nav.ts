@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 
 interface NavState {
+  // whether the navigation menu is open or closed
   isOpen: boolean
-  isTransitioning: boolean
 }
 
 interface NavActions {
@@ -18,7 +18,6 @@ type NavStore = NavState & NavActions
  */
 export const useMobileNav = create<NavStore>((set) => ({
   isOpen: false,
-  isTransitioning: false,
   toggleNav: () => set((state) => ({ isOpen: !state.isOpen })),
   openNav: () => set({ isOpen: true }),
   closeNav: () => set({ isOpen: false }),
@@ -29,7 +28,6 @@ export const useMobileNav = create<NavStore>((set) => ({
  */
 export const useDesktopNav = create<NavStore>((set) => ({
   isOpen: true,
-  isTransitioning: false,
   toggleNav: () => set((state) => ({ isOpen: !state.isOpen })),
   openNav: () => set({ isOpen: true }),
   closeNav: () => set({ isOpen: false }),
