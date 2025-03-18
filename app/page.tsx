@@ -4,7 +4,16 @@ import { redirect } from 'next/navigation'
 import { useSubredditStore } from '@/store/subreddits'
 
 export default function Home() {
-  const { getTopSubreddit } = useSubredditStore()
+  const { hydrated, getTopSubreddit } = useSubredditStore()
+
+  // wait for the store to hydrate before checking for saved subreddits
+  if (!hydrated) {
+    return (
+      <div className='flex h-screen items-center justify-center'>
+        <p>Loading…</p>
+      </div>
+    )
+  }
 
   const top = getTopSubreddit()?.name ?? 'all'
 

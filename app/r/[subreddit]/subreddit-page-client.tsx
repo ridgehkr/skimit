@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { PostsList } from '@/components/posts-list'
-import { fetchPosts } from '@/lib/fetchPosts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Search } from 'lucide-react'
 import { SubredditHeader } from '@/components/subreddit-header'
@@ -14,11 +13,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { SortBy } from '@/types/reddit'
+import type { RedditPost, SortBy, SubredditInfo } from '@/types/reddit'
+import { fetchRedditPosts, fetchSubredditInfo } from '@/lib/reddit'
 import { useMobileNav } from '@/store/nav'
+import { useSubredditStore } from '@/store/subreddits'
 
 interface SubredditPageClientProps {
   subreddit: string
+}
+
+interface FetchPostsParams {
+  subreddit: string
+  sortBy: SortBy
+  after?: string
+  subredditInfo?: SubredditInfo | null
+  allowNSFW?: boolean
+}
+
+const fetchPosts = async ({
+  subreddit,
+  sortBy,
+  after = undefined,
+  subredditInfo = null,
+  allowNSFW = false,
+}: FetchPostsParams): Promise<
+  [RedditPost[], SubredditInfo | null, string | null]
+> => {
+  const [postsData, info] = await Promise.all([
+    fetchRedditPosts(subreddit, sortBy, after),
+    !after ? fetchSubredditInfo(subreddit) : Promise.resolve(subredditInfo),
+  ])
+
+  const posts = postsData.posts.filter((post) => !post.over_18 || allowNSFW)
+
+  return [posts, info ?? null, postsData.after]
 }
 
 export default function SubredditPageClient({
@@ -27,6 +55,7 @@ export default function SubredditPageClient({
   const [mounted, setMounted] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('hot')
   const { closeNav } = useMobileNav()
+  const allowNSFW = useSubredditStore((state) => state.allowNSFW)
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -48,7 +77,7 @@ export default function SubredditPageClient({
   } = useInfiniteQuery({
     queryKey: ['posts', subreddit, sortBy],
     queryFn: ({ pageParam = undefined }: { pageParam?: string }) =>
-      fetchPosts(subreddit, sortBy, pageParam),
+      fetchPosts({ subreddit, sortBy, allowNSFW, after: pageParam }),
     getNextPageParam: (lastPage) => lastPage?.[2] || null, // `after` value for pagination
     initialPageParam: undefined,
   })
@@ -58,12 +87,13 @@ export default function SubredditPageClient({
   }
 
   const posts = data?.pages.flatMap((page) => page[0]) || []
+
   const subredditInfo = data?.pages[0]?.[1] || null
 
   return (
-    <div className='pt-4'>
+    <div>
       <div className='flex flex-col h-full'>
-        <div className='grid gap-6 lg:flex items-center justify-between pb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b md:top-16 z-40 mx-4'>
+        <div className='grid gap-6 lg:flex items-center justify-between ml-5 py-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:top-16 z-40'>
           <SubredditHeader
             info={subredditInfo}
             loading={isLoading}

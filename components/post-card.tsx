@@ -112,6 +112,13 @@ export function PostCard({ post }: PostCardProps) {
             <div className='flex-1 min-w-0'>
               <h3 className='font-semibold mb-2'>{post.title}</h3>
               <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+                {post.over_18 && (
+                  <span className='inline-flex items-center gap-2'>
+                    <span className='text-red-500 font-bold'>NSFW</span>
+                    <span className='text-muted-foreground'>•</span>
+                  </span>
+                )}
+
                 <div className='flex items-center gap-1'>
                   <TypeIcon className='h-3.5 w-3.5' />
                   <span>{typeLabel}</span>

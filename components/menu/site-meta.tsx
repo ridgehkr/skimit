@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/menu/theme-toggle'
 import { Separator } from '@/components/ui/separator'
+import { SettingsMenu } from '@/components/menu/settings-menu'
 
 /**
  * Displays the site meta information including the theme toggle, about link, and GitHub link.
@@ -10,8 +11,6 @@ export function SiteMeta() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <ThemeToggle />
-
       <div className='text-xs text-muted-foreground'>
         <nav className='mb-2'>
           <ul className='flex h-4 items-center space-x-4'>

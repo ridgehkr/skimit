@@ -35,14 +35,24 @@ interface SubredditSearchProps {
 export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [debouncedSearchString, setDebouncedSearchString] = useState('')
-  const { subreddits, addSubreddit, removeSubreddit } = useSubredditStore()
+  const { subreddits, addSubreddit } = useSubredditStore()
   const router = useRouter()
+
+  const allowNSFW = useSubredditStore((state) => state.allowNSFW)
 
   // subreddit autocomplete suggestions
   const { data: suggestions = [], isLoading } = useAutocompleteSuggestions(
     debouncedSearchString,
-    subreddits
+    subreddits,
+    10,
+    allowNSFW
   )
+
+  useEffect(() => {
+    if (!suggestions.length) return
+
+    console.log(suggestions[0])
+  }, [suggestions])
 
   // when the search modal is closed, reset the search suggestion selected index
   useEffect(() => {
@@ -62,7 +72,7 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
 
     // notify the user
     toast('Subreddit Saved', {
-      description: `/r/${subredditName} has been added to saved subreddits.`,
+      description: `<strong>/r/${subredditName}</strong> has been added to your saved subreddits.`,
       action: {
         label: 'View',
         onClick: () => router.push(`/r/${subredditName}`),
@@ -203,7 +213,16 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
                     </div>
                   )}
                   <div className='flex flex-col'>
-                    <span className='font-medium'>r/{suggestion.name}</span>
+                    <div className='flex items-center gap-2'>
+                      <span className='font-medium'>r/{suggestion.name}</span>
+
+                      {suggestion.over18 && (
+                        <span className='text-xs text-muted-foreground inline-flex items-center gap-2'>
+                          {'•'}
+                          <span className='text-red-500 font-bold'>NSFW</span>
+                        </span>
+                      )}
+                    </div>
                     <span className='text-xs text-muted-foreground'>
                       {formatSubscribers(suggestion.subscribers)}
                     </span>

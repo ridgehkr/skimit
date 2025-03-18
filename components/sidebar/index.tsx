@@ -27,7 +27,7 @@ export function Sidebar() {
     <div
       className={cn(
         'z-20 hidden md:flex h-[calc(100vh-4rem)] flex-col fixed left-0 top-16 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300',
-        isOpen ? 'w-[300px]' : 'w-[60px]'
+        isOpen ? 'w-[300px]' : 'w-8'
       )}
     >
       <TooltipProvider>
@@ -47,7 +47,7 @@ export function Sidebar() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {isOpen ? <p>Collapse sidebar</p> : <p>Expand sidebar</p>}
+            {isOpen ? <p>Hide sidebar</p> : <p>Show sidebar</p>}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

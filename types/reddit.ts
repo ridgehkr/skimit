@@ -11,6 +11,7 @@ export interface RedditPost {
   selftext?: string
   is_video: boolean
   is_gallery?: boolean
+  over_18: boolean
   gallery_data?: {
     items: Array<{
       media_id: string
@@ -91,6 +92,7 @@ export interface SubredditSuggestion {
   name: string
   subscribers: number
   icon_img?: string
+  over18: boolean
 }
 
 export interface RedditApiResponse {

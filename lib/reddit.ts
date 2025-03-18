@@ -5,6 +5,7 @@ import type {
 } from '@/types/reddit'
 import { type SavedSubreddit } from '@/store/subreddits'
 import { useQuery } from '@tanstack/react-query'
+import { over } from 'lodash'
 
 const REDDIT_API_BASE = 'https://www.reddit.com'
 
@@ -25,6 +26,7 @@ export async function fetchRedditPosts(
 ): Promise<{ posts: any[]; after: string | null }> {
   const params = new URLSearchParams({
     raw_json: '1',
+    allow_over_18: 'true',
     ...(after ? { after } : {}),
   })
 
@@ -125,14 +127,17 @@ export async function fetchSubredditInfo(
 const fetchAutocompleteSuggestions = async (
   query: string,
   limit = 10,
-  subreddits: SavedSubreddit[] = []
+  subreddits: SavedSubreddit[] = [],
+  allowNSFW = false
 ): Promise<SubredditSuggestion[]> => {
   if (!query.trim()) {
     return []
   }
 
   const response = await fetch(
-    `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
+    `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=${
+      allowNSFW ? 'true' : 'false'
+    }`
   )
   const data = await response.json()
   return (
@@ -141,6 +146,7 @@ const fetchAutocompleteSuggestions = async (
         name: child.data.display_name,
         subscribers: child.data.subscribers,
         icon_img: child.data.icon_img,
+        over18: child.data.over18,
       }))
       // Filter out subreddit suggestions that are already saved
       .filter(
@@ -157,11 +163,13 @@ const fetchAutocompleteSuggestions = async (
 export const useAutocompleteSuggestions = (
   query: string,
   subreddits: SavedSubreddit[],
-  limit = 10
+  limit = 10,
+  allowNSFW = false
 ) => {
   return useQuery({
     queryKey: ['subreddit-suggestions', query],
-    queryFn: () => fetchAutocompleteSuggestions(query, limit, subreddits),
+    queryFn: () =>
+      fetchAutocompleteSuggestions(query, limit, subreddits, allowNSFW),
     enabled: !!query, // Only fetch when query is not empty
     staleTime: 30000, // Cache results for 30 seconds
   })
