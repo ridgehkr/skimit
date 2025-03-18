@@ -27,7 +27,7 @@ export function PostsList({
 }: PostsListProps) {
   if (loading) {
     return (
-      <div className='flex justify-center items-center h-full'>
+      <div className='flex justify-center items-center h-full py-4'>
         <p>Loading posts…</p>
       </div>
     )
