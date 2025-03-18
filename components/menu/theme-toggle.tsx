@@ -5,6 +5,9 @@ import { Switch } from '@/components/ui/switch'
 import { Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+/**
+ * Displays a toggle switch for changing the application theme between light and dark modes.
+ */
 export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)

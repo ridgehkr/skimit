@@ -14,96 +14,37 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import debounce from 'lodash/debounce'
-import { useQuery } from '@tanstack/react-query'
-import { useSubredditStore, SavedSubreddit } from '@/store/subreddits'
+import { useSubredditStore } from '@/store/subreddits'
 import { useRouter } from 'next/navigation'
+import { useAutocompleteSuggestions } from '@/lib/reddit'
+import { type SubredditSuggestion } from '@/types/reddit'
 
 interface SubredditSearchProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
 }
 
-interface SubredditSuggestion {
-  name: string
-  subscribers: number
-  icon_img?: string
-}
-
-const fetchAutocompleteSuggestions = async (
-  query: string,
-  limit = 10,
-  subreddits: SavedSubreddit[] = []
-): Promise<SubredditSuggestion[]> => {
-  if (!query.trim()) {
-    return []
-  }
-
-  const response = await fetch(
-    `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
-  )
-  const data = await response.json()
-  return (
-    data.data.children
-      .map((child: any) => ({
-        name: child.data.display_name,
-        subscribers: child.data.subscribers,
-        icon_img: child.data.icon_img,
-      }))
-
-      // filter out subreddit suggestions that are already saved
-      .filter(
-        (suggestion: SubredditSuggestion) =>
-          !subreddits.find(
-            (saved: SavedSubreddit) =>
-              saved.name?.toLowerCase() === suggestion.name?.toLowerCase()
-          )
-      )
-
-      .slice(0, limit)
-  )
-}
-
+/**
+ * Displays a modal for searching for and adding new subreddits to the saved subreddits list.
+ */
 export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [debouncedSearchString, setDebouncedSearchString] = useState('')
+  const { subreddits, addSubreddit, removeSubreddit } = useSubredditStore()
   const router = useRouter()
 
-  const handleSubredditSearchSubmit = (subredditName: string) => {
-    setIsOpen(false)
-
-    // redirect to newly-loaded subreddit
-    router.push(`/r/${subredditName}`)
-  }
-
-  const debouncedSetSearchString = useCallback(
-    debounce((value: string) => {
-      setDebouncedSearchString(value)
-    }, 500),
-    []
+  // subreddit autocomplete suggestions
+  const { data: suggestions = [], isLoading } = useAutocompleteSuggestions(
+    debouncedSearchString,
+    subreddits
   )
 
-  const handleSearchInputChange = (value: string) => {
-    debouncedSetSearchString(value)
-  }
-
-  const { subreddits, addSubreddit } = useSubredditStore()
-
-  const {
-    data: suggestions = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['subreddit-suggestions', debouncedSearchString],
-    queryFn: () =>
-      fetchAutocompleteSuggestions(debouncedSearchString, 10, subreddits),
-    enabled: !!debouncedSearchString,
-    staleTime: 30000,
-  })
-
+  // when the search modal is closed, reset the search suggestion selected index
   useEffect(() => {
     if (!open) {
       setSelectedIndex(-1)
@@ -111,10 +52,53 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   }, [open, setSelectedIndex])
 
   /**
+   * Add a subreddit to the saved subreddits list and redirect to it
+   *
+   * @param subredditName - The name of the subreddit to save (does not include the /r/ prefix)
+   * @return {void}
+   */
+  const handleSubredditSearchSubmit = (subredditName: string) => {
+    setIsOpen(false)
+
+    // notify the user
+    toast('Subreddit Saved', {
+      description: `/r/${subredditName} has been added to saved subreddits.`,
+      action: {
+        label: 'View',
+        onClick: () => router.push(`/r/${subredditName}`),
+      },
+    })
+  }
+
+  /**
+   * Debounce the search input to avoid excessive API calls
+   * @param {string} value - The current value of the search input
+   * @returns {void}
+   */
+  const debouncedSetSearchString = useCallback(
+    debounce((value: string) => {
+      setDebouncedSearchString(value)
+    }, 500),
+    []
+  )
+
+  /**
+   * Handle search input change with debouncing
+   *
+   * @param value - The current value of the search input
+   * @returns {void}
+   */
+  const handleSearchInputChange = (value: string) => {
+    debouncedSetSearchString(value)
+  }
+
+  /**
    * Select a subreddit from the suggestions list
    * @param {string} value - The name of the subreddit
    */
   const handleSelect = (value: string) => {
+    console.log({ suggestions })
+
     const selectedSubreddit = suggestions.find(
       (s: SubredditSuggestion) => s.name.toLowerCase() === value.toLowerCase()
     )
@@ -130,7 +114,12 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
     }
   }
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  /**
+   * Handle keyboard up, down, and selection navigation for the search suggestions list
+   *
+   * @param {KeyboardEvent<HTMLDivElement>} e - The keyboard event
+   */
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setSelectedIndex((prev) =>
@@ -145,7 +134,13 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
     }
   }
 
-  const formatSubscribers = (count: number) => {
+  /**
+   * Format the subscriber count for a more readable appearance
+   *
+   * @param {number} count - The number of subscribers
+   * @returns {string} - The formatted subscriber count
+   */
+  const formatSubscribers = (count: number): string => {
     if (count >= 1000000) {
       return `${(count / 1000000).toFixed(1)}M subscribers`
     }
@@ -169,15 +164,19 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
             placeholder='Search subreddits…'
             onValueChange={handleSearchInputChange}
           />
-          <CommandEmpty>
-            {isLoading ? (
-              <div className='flex items-center justify-center py-6'>
-                <Loader2 className='h-4 w-4 animate-spin' />
-              </div>
-            ) : (
-              'No subreddits found.'
-            )}
-          </CommandEmpty>
+
+          {!!debouncedSearchString && (
+            <CommandEmpty>
+              {isLoading ? (
+                <div className='flex items-center justify-center py-6'>
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                </div>
+              ) : (
+                'No subreddits found.'
+              )}
+            </CommandEmpty>
+          )}
+
           {suggestions.length > 0 && (
             <CommandGroup>
               {suggestions.map((suggestion, index) => (
@@ -186,7 +185,7 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
                   value={suggestion.name}
                   onSelect={handleSelect}
                   className={cn(
-                    'flex items-center gap-2 py-3',
+                    'flex items-center gap-2 py-3 cursor-pointer',
                     selectedIndex === index && 'bg-accent'
                   )}
                 >

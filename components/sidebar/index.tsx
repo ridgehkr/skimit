@@ -1,7 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight, Divide } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDesktopNav } from '@/store/nav'
 import { SubredditMenu } from '@/components/menu/subreddit-menu'
@@ -24,18 +30,27 @@ export function Sidebar() {
         isOpen ? 'w-[300px]' : 'w-[60px]'
       )}
     >
-      <Button
-        variant='ghost'
-        size='icon'
-        className='absolute -right-4 top-[1.1rem] h-8 w-8 rounded-full border bg-background shadow-md z-20'
-        onClick={() => toggleNav()}
-      >
-        {!isOpen ? (
-          <ChevronRight className='h-4 w-4' />
-        ) : (
-          <ChevronLeft className='h-4 w-4' />
-        )}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='absolute -right-4 top-[1.1rem] h-8 w-8 rounded-full border bg-background shadow-md z-20'
+              onClick={() => toggleNav()}
+            >
+              {isOpen ? (
+                <ChevronLeft className='h-4 w-4' />
+              ) : (
+                <ChevronRight className='h-4 w-4' />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isOpen ? <p>Collapse sidebar</p> : <p>Expand sidebar</p>}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <div
         className={cn(

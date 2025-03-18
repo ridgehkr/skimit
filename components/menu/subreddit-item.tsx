@@ -9,8 +9,14 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
 import { buttonVariants } from '@/components/ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
-interface SortableItemProps {
+interface SubredditItemProps {
   id: string
   subreddit: SavedSubreddit
   isSelected: boolean
@@ -20,7 +26,10 @@ interface SortableItemProps {
   isReorderMode?: boolean
 }
 
-export function SortableItem({
+/**
+ * Displays a single listed subreddit for the menu with options to reorder and delete when edit mode is active.
+ */
+export function SubredditItem({
   id,
   subreddit,
   isSelected,
@@ -28,7 +37,7 @@ export function SortableItem({
   onToggleFavorite,
   isCollapsed = false,
   isReorderMode = false,
-}: SortableItemProps) {
+}: SubredditItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id,
@@ -119,21 +128,44 @@ export function SortableItem({
             'flex opacity-0 group-hover:opacity-100 transition-opacity opacity-100'
           }
         >
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={onToggleFavorite}
-            className={subreddit.isFavorite ? 'text-yellow-500' : ''}
-          >
-            {subreddit.isFavorite ? (
-              <StarOff className='h-4 w-4' />
-            ) : (
-              <Star className='h-4 w-4' />
-            )}
-          </Button>
-          <Button variant='ghost' size='icon' onClick={onDelete}>
-            <Trash2 className='h-4 w-4' />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={onToggleFavorite}
+                  className={subreddit.isFavorite ? 'text-yellow-500' : ''}
+                >
+                  {subreddit.isFavorite ? (
+                    <StarOff className='h-4 w-4' />
+                  ) : (
+                    <Star className='h-4 w-4' />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {subreddit.isFavorite ? (
+                  <p>Remove from favorites</p>
+                ) : (
+                  <p>Add to favorites</p>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant='ghost' size='icon' onClick={onDelete}>
+                  <Trash2 className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Sidebar } from '@/components/sidebar'
 import { useDesktopNav } from '@/store/nav'
+import { Toaster } from '@/components/ui/sonner'
 
 export default function RootLayout({
   children,
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         {children}
       </main>
+      <Toaster />
     </div>
   )
 }

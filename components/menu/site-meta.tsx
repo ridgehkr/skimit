@@ -2,7 +2,12 @@ import Link from 'next/link'
 import { ThemeToggle } from '@/components/menu/theme-toggle'
 import { Separator } from '@/components/ui/separator'
 
+/**
+ * Displays the site meta information including the theme toggle, about link, and GitHub link.
+ */
 export function SiteMeta() {
+  const currentYear = new Date().getFullYear()
+
   return (
     <div className='flex flex-col gap-4'>
       <ThemeToggle />
@@ -28,7 +33,7 @@ export function SiteMeta() {
           </ul>
         </nav>
 
-        <p>&copy; 2025 SkimIt. All rights reserved.</p>
+        <p>&copy; {currentYear} SkimIt. All rights reserved.</p>
       </div>
     </div>
   )

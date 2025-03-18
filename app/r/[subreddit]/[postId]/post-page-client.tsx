@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
 import { fetchRedditPost, fetchComments } from '@/lib/reddit'
 import { CommentList } from '@/components/comments/comment-list'
 import { PostHeader } from '@/components/post-detail/post-header'
@@ -48,18 +48,18 @@ function CommentSection({
           <h2 className='text-xl font-semibold'>Comments</h2>
           {!loadingComments && hasComments && (
             <Button
-              variant='link'
-              className='h-auto p-0'
+              variant='outline'
+              className='gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-xs'
               onClick={allCollapsed ? expandAll : collapseAll}
             >
               {allCollapsed ? (
                 <>
-                  <ChevronDown className='h-4 w-4 mr-2' />
+                  <ChevronDown className='h-4 w-4' />
                   Expand All
                 </>
               ) : (
                 <>
-                  <ChevronRight className='h-4 w-4 mr-2' />
+                  <ChevronUp className='h-4 w-4' />
                   Collapse All
                 </>
               )}

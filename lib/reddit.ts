@@ -1,15 +1,12 @@
-import { SubredditInfo } from '@/types/reddit'
+import type {
+  SubredditInfo,
+  SubredditSuggestion,
+  RedditApiResponse,
+} from '@/types/reddit'
+import { type SavedSubreddit } from '@/store/subreddits'
+import { useQuery } from '@tanstack/react-query'
 
 const REDDIT_API_BASE = 'https://www.reddit.com'
-
-interface RedditApiResponse {
-  data: {
-    children: Array<{
-      data: any
-    }>
-    after?: string | null
-  }
-}
 
 async function handleRedditResponse(response: Response) {
   if (!response.ok) {
@@ -120,4 +117,52 @@ export async function fetchSubredditInfo(
       ? error
       : new Error('Failed to load subreddit info')
   }
+}
+
+/**
+ * Autocomplete suggestions for subreddit names based on a search string
+ */
+const fetchAutocompleteSuggestions = async (
+  query: string,
+  limit = 10,
+  subreddits: SavedSubreddit[] = []
+): Promise<SubredditSuggestion[]> => {
+  if (!query.trim()) {
+    return []
+  }
+
+  const response = await fetch(
+    `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${query}&raw_json=1&include_over_18=true`
+  )
+  const data = await response.json()
+  return (
+    data.data.children
+      .map((child: any) => ({
+        name: child.data.display_name,
+        subscribers: child.data.subscribers,
+        icon_img: child.data.icon_img,
+      }))
+      // Filter out subreddit suggestions that are already saved
+      .filter(
+        (suggestion: SubredditSuggestion) =>
+          !subreddits.find(
+            (saved: SavedSubreddit) =>
+              saved.name?.toLowerCase() === suggestion.name?.toLowerCase()
+          )
+      )
+      .slice(0, limit)
+  )
+}
+
+export const useAutocompleteSuggestions = (
+  query: string,
+  subreddits: SavedSubreddit[],
+  limit = 10
+) => {
+  return useQuery({
+    queryKey: ['subreddit-suggestions', query],
+    queryFn: () => fetchAutocompleteSuggestions(query, limit, subreddits),
+    enabled: !!query, // Only fetch when query is not empty
+    staleTime: 30000, // Cache results for 30 seconds
+  })
 }

@@ -11,7 +11,8 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { SortableItem } from '@/components/menu/sortable-item'
+import { SubredditItem } from '@/components/menu/subreddit-item'
+import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ function MenuGroup({ subreddits, isEditMode }: MenuGroupProps) {
     toggleFavorite,
     removeSubreddit,
     setSubreddits,
+    addSubreddit,
     subreddits: allSubreddits,
   } = useSubredditStore()
   const pathname = usePathname()
@@ -37,6 +39,36 @@ function MenuGroup({ subreddits, isEditMode }: MenuGroupProps) {
     useSensor(KeyboardSensor)
   )
 
+  /**
+   * Remove a subreddit from the saved subreddits list
+   *
+   * @param subredditName - The name of the subreddit to remove
+   * @return {void}
+   */
+  const handleDeleteSubreddit = (subredditName: string) => {
+    const cacheRemoved = allSubreddits.find((s) => s.name === subredditName)
+    if (!cacheRemoved) return
+
+    removeSubreddit(subredditName)
+    toast('Subreddit Removed', {
+      description: `r/${subredditName} removed from saved subreddits.`,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          addSubreddit(cacheRemoved)
+        },
+      },
+    })
+  }
+
+  /**
+   * When a subreddit drag ends, update the order of the subreddits
+   *
+   * @param {DragEndEvent} event - The drag end event from dnd-kit
+   * @param {string} event.active.id - The id of the active (dragged) item
+   * @param {string} event.over.id - The id of the item that the active item was dropped over
+   * @returns {void}
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -73,12 +105,12 @@ function MenuGroup({ subreddits, isEditMode }: MenuGroupProps) {
         <ul className='flex flex-col space-y-1'>
           {subreddits.map((subreddit) => (
             <li key={subreddit.name} className='w-full'>
-              <SortableItem
+              <SubredditItem
                 id={subreddit.name}
                 subreddit={subreddit}
                 isSelected={pathname.startsWith(`/r/${subreddit.name}`)}
                 onToggleFavorite={() => toggleFavorite(subreddit.name)}
-                onDelete={() => removeSubreddit(subreddit.name)}
+                onDelete={() => handleDeleteSubreddit(subreddit.name)}
                 isReorderMode={isEditMode}
               />
             </li>
@@ -89,6 +121,9 @@ function MenuGroup({ subreddits, isEditMode }: MenuGroupProps) {
   )
 }
 
+/**
+ * Displays a list of saved subreddits with options to edit, sort, and add new subreddits.
+ */
 export function SubredditMenu() {
   const [isEditMode, setIsEditMode] = useState(false)
   const [showSearchModal, setShowSearchModal] = useState(false)
@@ -155,8 +190,8 @@ export function SubredditMenu() {
         {subreddits.length > 0 && (
           <Button
             onClick={() => setShowSearchModal(true)}
-            className='rounded-sm'
-            variant='secondary'
+            className='rounded-sm mx-auto grow-0'
+            variant='outline'
           >
             <Plus className='h-4 w-4' />
             <span>Add</span>

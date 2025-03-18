@@ -86,3 +86,18 @@ export interface SubredditInfo {
 
 export type SortBy = 'hot' | 'new' | 'top'
 export type CommentSortBy = 'best' | 'top' | 'new' | 'controversial' | 'old'
+
+export interface SubredditSuggestion {
+  name: string
+  subscribers: number
+  icon_img?: string
+}
+
+export interface RedditApiResponse {
+  data: {
+    children: Array<{
+      data: any
+    }>
+    after?: string | null
+  }
+}
