@@ -23,9 +23,12 @@ export function SettingsMenu() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='ghost' className='text-xs'>
+        <Button
+          variant='ghost'
+          className='text-muted-foreground hover:text-foreground has-[>svg]:px-0 md:has-[>svg]:px-2.5 hover:text-primary focus-visible:text-primary'
+        >
           <SlidersHorizontal />
-          Settings
+          <span className='sr-only'>Settings</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-60' align='end'>

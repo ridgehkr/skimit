@@ -1,7 +1,5 @@
 import Link from 'next/link'
-import { ThemeToggle } from '@/components/menu/theme-toggle'
 import { Separator } from '@/components/ui/separator'
-import { SettingsMenu } from '@/components/menu/settings-menu'
 
 /**
  * Displays the site meta information including the theme toggle, about link, and GitHub link.

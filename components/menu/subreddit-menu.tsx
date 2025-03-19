@@ -12,6 +12,7 @@ import {
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SubredditItem } from '@/components/menu/subreddit-item'
+import { SettingsMenu } from '@/components/menu/settings-menu'
 import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -162,10 +163,6 @@ export function SubredditMenu() {
         </div>
       )}
 
-      {subreddits.length > 0 && (
-        <h2 className='mb-6 font-semibold'>Subreddits</h2>
-      )}
-
       <div className='flex flex-col flex-grow space-y-6'>
         {favorites.length > 0 && (
           <div>
@@ -188,14 +185,30 @@ export function SubredditMenu() {
         )}
 
         {subreddits.length > 0 && (
-          <Button
-            onClick={() => setShowSearchModal(true)}
-            className='rounded-sm mx-auto grow-0'
-            variant='outline'
-          >
-            <Plus className='h-4 w-4' />
-            <span>Add</span>
-          </Button>
+          <div className='flex flex-col items-center justify-center gap-4 mx-auto'>
+            <Button
+              onClick={() => setShowSearchModal(true)}
+              className='rounded-sm mx-auto grow-0'
+              variant='outline'
+            >
+              <Plus className='h-4 w-4' />
+              <span>Add</span>
+            </Button>
+
+            {isEditMode &&
+              (favorites.length >= 2 || nonFavorites.length >= 2) && (
+                <Button
+                  variant='link'
+                  size='sm'
+                  onClick={sort}
+                  type='button'
+                  className='text-muted-foreground hover:text-foreground has-[>svg]:px-0 md:has-[>svg]:px-2.5 h-auto'
+                >
+                  <AArrowDown className='h-4 w-4 mr-1' />
+                  Sort A-Z
+                </Button>
+              )}
+          </div>
         )}
       </div>
 
@@ -215,19 +228,7 @@ export function SubredditMenu() {
             {isEditMode ? 'Done' : 'Edit'}
           </Button>
 
-          {isEditMode &&
-            (favorites.length >= 2 || nonFavorites.length >= 2) && (
-              <Button
-                variant='link'
-                size='sm'
-                onClick={sort}
-                type='button'
-                className='text-muted-foreground hover:text-foreground has-[>svg]:px-0 md:has-[>svg]:px-2.5 h-auto'
-              >
-                <AArrowDown className='h-4 w-4 mr-1' />
-                Sort A-Z
-              </Button>
-            )}
+          <SettingsMenu />
         </div>
       )}
 

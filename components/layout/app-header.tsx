@@ -50,21 +50,14 @@ export function AppHeader() {
         </Link>
 
         <div className='inline-flex items-center gap-4'>
-          {/* Desktop login button */}
-          {/* <div className='hidden md:block'>
-            <LoginButton />
-          </div> */}
-
-          <SettingsMenu />
-
           {/* Mobile menu button */}
           <Button
-            variant='ghost'
-            className='md:hidden has-[>svg]:px-0'
+            variant='secondary'
+            className='md:hidden'
             onClick={openNav}
+            aria-label='Open menu'
           >
-            <span>Subreddits</span>
-            <Menu className='h-6 w-6' />
+            <Menu className='h-10 w-10' />
           </Button>
 
           <Sheet
@@ -73,11 +66,8 @@ export function AppHeader() {
           >
             <SheetContent side='right' className='w-[300px] sm:w-[400px] p-0'>
               <div className='flex flex-col h-full p-4'>
-                <SheetHeader className='border-b mb-2 pb-2'>
+                <SheetHeader className='border-b mb-4 pb-2'>
                   <SheetTitle className='text-left'>Menu</SheetTitle>
-                  {/* <div className='mt-4'>
-                    <LoginButton />
-                  </div> */}
                 </SheetHeader>
 
                 <SubredditMenu />
