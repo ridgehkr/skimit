@@ -109,7 +109,7 @@ function MenuGroup({ subreddits, isEditMode }: MenuGroupProps) {
               <SubredditItem
                 id={subreddit.name}
                 subreddit={subreddit}
-                isSelected={pathname.startsWith(`/r/${subreddit.name}`)}
+                isSelected={pathname.startsWith(`/r/${subreddit.name}/`)}
                 onToggleFavorite={() => toggleFavorite(subreddit.name)}
                 onDelete={() => handleDeleteSubreddit(subreddit.name)}
                 isReorderMode={isEditMode}

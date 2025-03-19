@@ -72,7 +72,7 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
 
     // notify the user
     toast('Subreddit Saved', {
-      description: `<strong>/r/${subredditName}</strong> has been added to your saved subreddits.`,
+      description: `/r/${subredditName} added to your saved subreddits.`,
       action: {
         label: 'View',
         onClick: () => router.push(`/r/${subredditName}`),
