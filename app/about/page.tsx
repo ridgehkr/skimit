@@ -3,57 +3,74 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import { SiGithub as GitHub } from '@icons-pack/react-simple-icons'
 import Link from 'next/link'
 
 export default function AboutPage() {
   return (
     <div className='min-h-screen p-4 pt-20 md:pt-24 max-w-2xl mx-auto'>
-      <Link href='/'>
-        <Button variant='ghost' className='mb-6'>
-          <ArrowLeft className='h-4 w-4 mr-2' />
-          Back to SkimIt
+      <div className='flex items-center justify-between mb-6'>
+        <Link href='/'>
+          <Button variant='ghost'>
+            <ArrowLeft className='h-4 w-4 mr-2' />
+            Home
+          </Button>
+        </Link>
+
+        <Button variant='outline' asChild>
+          <a
+            href='https://github.com/ridgehkr/skimit'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex items-center gap-x-2'
+          >
+            <GitHub className='h-4 w-4' />
+            <span>GitHub</span>
+          </a>
         </Button>
-      </Link>
+      </div>
 
       <div className='space-y-6'>
         <Card>
           <CardHeader>
-            <CardTitle className='text-2xl'>About</CardTitle>
+            <CardTitle className='text-2xl'>About SkimIt</CardTitle>
           </CardHeader>
-          <CardContent className='space-y-4 pb-6'>
+          <CardContent className='space-y-4 pb-6 prose'>
             <p>
-              SkimIt is an open-source Reddit client that provides a clean and
-              simple way to browse Reddit content and comments without all the
-              extra noise.
+              Skimit is an open-source, read-only Reddit client built for a
+              simple and uncluttered browsing experience. It lets you scroll
+              through Reddit without ads, distractions, or engagement loops—just
+              content.
             </p>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-2xl'>Contributing</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-4 pb-6'>
+            <ul className='space-y-2 list-disc pl-5'>
+              <li>
+                <strong>Read-Only:</strong> No voting, commenting, or posting,
+                just browsing.
+              </li>
+              <li>
+                <strong>Minimal & Fast:</strong> Lightweight and free of
+                unnecessary UI elements.
+              </li>
+              <li>
+                <strong>Ad-Free & Open-Source:</strong> No ads, no tracking, and
+                open for community contributions.
+              </li>
+              <li>
+                <strong>Privacy-Focused:</strong> No data collection, just a
+                direct way to read Reddit.
+              </li>
+            </ul>
             <p>
-              SkimIt is an open source project, and we welcome your
-              contributions! Get started by checking out the project on{' '}
-              <a
-                href='https://github.com/ridgehkr/skimit'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='underline'
-              >
-                GitHub
-              </a>
-              .
+              Skimit is for anyone who wants a quieter way to browse Reddit.
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className='text-center p-4 mt-6 space-y-4'>
-        <p className='text-sm'>
-          SkimIt is built and maintained by{' '}
+      <div className='text-center my-6 space-y-4'>
+        <p className='text-sm prose'>
+          Built and maintained by{' '}
           <a
             href='https://calebpierce.dev'
             rel='noopener noreferrer'
