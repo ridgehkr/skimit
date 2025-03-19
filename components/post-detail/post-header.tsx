@@ -65,7 +65,7 @@ export function PostHeader({ post }: PostHeaderProps) {
   }, [api])
 
   return (
-    <CardHeader className='space-y-4'>
+    <CardHeader className='space-y-4 px-4 md:px-4'>
       <div className='space-y-2'>
         <h1 className='text-xl md:text-2xl font-bold'>
           {isLink ? (
@@ -81,7 +81,7 @@ export function PostHeader({ post }: PostHeaderProps) {
             post.title
           )}
         </h1>
-        <div className='flex items-center gap-4 text-sm text-muted-foreground'>
+        <div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground'>
           <span>Posted by u/{post.author}</span>
           <span>{formatRedditDate(post.created_utc)}</span>
           <div className='flex items-center gap-1'>

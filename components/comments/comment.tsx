@@ -33,7 +33,7 @@ export function Comment({ comment, isTopLevel = false }: CommentProps) {
         <div className='text-muted-foreground text-sm'>Comment deleted</div>
       ) : (
         <div className='flex items-start gap-2'>
-          <div className='flex-1'>
+          <div className='flex-1 min-w-0'>
             <div
               onClick={() => toggleComment(comment.id)}
               className='cursor-pointer hover:opacity-80'
@@ -49,7 +49,7 @@ export function Comment({ comment, isTopLevel = false }: CommentProps) {
             </div>
 
             {!collapsed && (
-              <div className='mt-2 space-y-2'>
+              <div className='mt-2 space-y-2 mw-full'>
                 <MarkdownContent content={comment.body} />
                 {hasReplies && <CommentReplies replies={replies} />}
               </div>

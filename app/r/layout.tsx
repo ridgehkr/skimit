@@ -28,7 +28,7 @@ export default function RootLayout({
       <Sidebar />
 
       <main
-        className={`flex-1 transition-all duration-300 md:p-4 z-10 ${
+        className={`flex-1 transition-all duration-300 p-4 z-10 ${
           !isOpen ? 'md:ml-[60px]' : 'md:ml-[300px]'
         }`}
       >

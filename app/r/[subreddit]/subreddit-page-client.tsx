@@ -92,7 +92,7 @@ export default function SubredditPageClient({
 
   return (
     <div>
-      <div className='flex flex-col h-full p-4 md:p-0'>
+      <div className='flex flex-col h-full p-0'>
         <div className='grid gap-6 lg:flex items-center justify-between md:ml-5 py-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:top-16 z-40'>
           <SubredditHeader
             info={subredditInfo}
