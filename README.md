@@ -28,9 +28,9 @@ This project is pre-configured to deploy to Netlify (see `./netlify.toml`), but 
 
 ## 🗺️ Roadmap
 
-THese are planned future features of SkimIt. If you have other ideas or suggestions, please [open an issue](https://github.com/ridgehkr/skimit/issues).
+These are planned future features of SkimIt. If you have other ideas or suggestions, please [open an issue](https://github.com/ridgehkr/skimit/issues).
 
-- [ ] Reddit authentication and account integration
+- [ ] Reddit authentication and limited account integration (e.g. importing saved subreddits)
 - [ ] Upvoting/downvoting
 - [ ] Adopt a more customized design, departing from the current shadcn/ui starter theme
 - [x] Migrate saved subreddit management to persisted Zustand approach
