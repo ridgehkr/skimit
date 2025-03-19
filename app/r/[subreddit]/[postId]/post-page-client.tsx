@@ -187,7 +187,7 @@ export default function PostPageClient({
   return (
     <CommentProvider>
       <div className='space-y-4'>
-        <Button variant='ghost' className='mb-4' asChild>
+        <Button variant='ghost' className='mb-4 ml-1' asChild>
           <Link href={`/r/${subreddit}`}>
             <ArrowLeft className='h-4 w-4' />
             Back to r/{subreddit}

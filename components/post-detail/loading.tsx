@@ -12,13 +12,13 @@ interface PostDetailLoadingProps {
 export function PostDetailLoading({ onBack }: PostDetailLoadingProps) {
   return (
     <div className='space-y-4'>
-      <Button variant='ghost' onClick={onBack} className='mb-4'>
-        <ArrowLeft className='h-4 w-4 mr-2' />
+      <Button variant='ghost' onClick={onBack} className='mb-4 ml-1'>
+        <ArrowLeft className='h-4 w-4 mr-1' />
         Back
       </Button>
 
       <Card>
-        <CardHeader className='space-y-4 pb-6'>
+        <CardHeader className='space-y-4 pb-6 p-4'>
           {/* Title and metadata loading state */}
           <div className='space-y-2'>
             <Skeleton className='h-8 w-3/4' />
@@ -30,7 +30,7 @@ export function PostDetailLoading({ onBack }: PostDetailLoadingProps) {
           </div>
 
           {/* Media placeholder */}
-          <Skeleton className='h-[400px] w-full rounded-lg' />
+          <Skeleton className='h-[200px] w-full rounded-lg' />
         </CardHeader>
       </Card>
 
