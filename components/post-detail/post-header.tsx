@@ -65,7 +65,7 @@ export function PostHeader({ post }: PostHeaderProps) {
   }, [api])
 
   return (
-    <CardHeader className='space-y-4 px-4 md:px-4'>
+    <CardHeader className='space-y-4 px-3 md:px-4'>
       <div className='space-y-2'>
         <h1 className='text-xl md:text-2xl font-bold'>
           {isLink ? (
@@ -101,9 +101,10 @@ export function PostHeader({ post }: PostHeaderProps) {
       )}
 
       {isGallery && galleryImages.length > 0 && (
-        <div className='w-full max-w-[800px] mx-auto pb-4'>
+        <div className='max-w-full w-[800px] mx-auto pb-4'>
           <div className='relative'>
-            <Carousel setApi={setApi} className='w-full'>
+            <Carousel setApi={setApi} className='w-full mx-auto'>
+              <CarouselPrevious className='hidden xl:inline-flex' />
               <CarouselContent>
                 {galleryImages.map((imageUrl, index) => (
                   <CarouselItem key={index}>
@@ -117,8 +118,7 @@ export function PostHeader({ post }: PostHeaderProps) {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              <CarouselNext className='hidden xl:inline-flex' />
             </Carousel>
 
             {count > 1 && (

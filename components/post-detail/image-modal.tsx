@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { ExternalLink, X } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
@@ -30,7 +30,7 @@ export function ImageModal({ src, alt, redditUrl }: ImageModalProps) {
             height={800}
             src={src}
             alt={alt}
-            className='max-w-[800px] max-h-[800px] w-auto h-auto object-contain hover:opacity-95 transition-opacity'
+            className='max-w-full w-[800px] max-h-[800px] w-auto h-auto object-contain hover:opacity-95 transition-opacity'
           />
         </div>
       </AlertDialogTrigger>

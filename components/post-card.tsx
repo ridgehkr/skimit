@@ -110,7 +110,9 @@ export function PostCard({ post }: PostCardProps) {
             )}
 
             <div className='flex-1 min-w-0'>
-              <h3 className='font-semibold mb-2'>{post.title}</h3>
+              <h3 className='text-sm lg:text-base font-semibold mb-2'>
+                {post.title}
+              </h3>
               <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
                 {post.over_18 && (
                   <span className='inline-flex items-center gap-2'>

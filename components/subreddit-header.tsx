@@ -83,7 +83,7 @@ export function SubredditHeader({
       <div className='flex flex-wrap gap-x-6 gap-y-4 text-sm'>
         <div className='flex items-center gap-2'>
           <Users className='h-4 w-4' />
-          <span className='inline-flex gap-1 white-space-nowrap'>
+          <span className='text-sm md:text-base inline-flex gap-1 white-space-nowrap'>
             <span className='font-medium'>
               {formatNumber(info.subscribers)}
             </span>
@@ -92,7 +92,7 @@ export function SubredditHeader({
         </div>
         <div className='flex items-center gap-2'>
           <Clock className='h-4 w-4' />
-          <span className='white-space-nowrap inline-flex gap-1'>
+          <span className='text-sm md:text-base white-space-nowrap inline-flex gap-1'>
             <span className='font-medium'>
               {formatNumber(info.active_user_count)}
             </span>
@@ -101,7 +101,7 @@ export function SubredditHeader({
         </div>
         <div className='flex items-center gap-2'>
           <Calendar className='h-4 w-4' />
-          <span className='text-muted-foreground white-space-nowrap'>
+          <span className='text-sm md:text-base text-muted-foreground white-space-nowrap'>
             Created {formatRedditDate(info.created_utc)}
           </span>
         </div>
