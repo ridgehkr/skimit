@@ -5,7 +5,13 @@ import type {
 } from '@/types/reddit'
 import { type SavedSubreddit } from '@/store/subreddits'
 import { useQuery } from '@tanstack/react-query'
-import { over } from 'lodash'
+import type { SortBy } from '@/types/reddit'
+
+// Default app setting for subreddit post sorting
+export const DEFAULT_SUBREDDIT_SORT: SortBy = 'hot'
+
+// Default app setting for allowing NSFW content
+export const DEFAULT_NSFW_ALLOWED = true
 
 const REDDIT_API_BASE = 'https://www.reddit.com'
 

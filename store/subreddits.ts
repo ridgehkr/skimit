@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+import { DEFAULT_NSFW_ALLOWED } from '@/lib/reddit'
 
 export interface SavedSubreddit {
   name: string
@@ -42,7 +43,7 @@ export const useSubredditStore = create<SubredditStore>()(
       subreddits: [],
 
       // allow NSFW content
-      allowNSFW: false,
+      allowNSFW: DEFAULT_NSFW_ALLOWED,
 
       // Whether to allow NSFW content
       setAllowNSFW: (allow: boolean) =>
