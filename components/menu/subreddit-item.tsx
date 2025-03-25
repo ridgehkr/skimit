@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useState } from 'react'
 
 interface SubredditItemProps {
   id: string
@@ -38,6 +39,8 @@ export function SubredditItem({
   isCollapsed = false,
   isReorderMode = false,
 }: SubredditItemProps) {
+  const [clicked, setClicked] = useState(false)
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id,
@@ -59,10 +62,13 @@ export function SubredditItem({
         <Link
           href={`/r/${subreddit.name}`}
           className={cn(
-            buttonVariants({ variant: isSelected ? 'secondary' : 'ghost' }),
+            buttonVariants({
+              variant: isSelected || clicked ? 'secondary' : 'ghost',
+            }),
             'w-10 h-10 rounded-lg'
           )}
           title={`r/${subreddit.name}`}
+          onClick={() => setClicked(true)}
         >
           {subreddit.iconUrl ? (
             <Image
