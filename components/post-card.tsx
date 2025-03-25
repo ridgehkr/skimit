@@ -90,8 +90,8 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Link href={`/r/${post.subreddit}/${post.id}`} className='block'>
-      <Card className='hover:bg-accent/50 transition-colors'>
-        <CardContent className='p-4'>
+      <Card className='hover:bg-accent/50 transition-colors shadow-none dark:shadow-sm'>
+        <CardContent className='px-3 py-4'>
           <div className='flex gap-3'>
             {thumbnail && (
               <figure className='relative flex-shrink-0 m-0 w-[80px] h-[80px] rounded-md overflow-hidden bg-muted'>

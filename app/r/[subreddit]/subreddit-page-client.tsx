@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { PostsList } from '@/components/posts-list'
-import { useTheme } from 'next-themes'
 import { Card, CardContent } from '@/components/ui/card'
 import { Search } from 'lucide-react'
 import { SubredditHeader } from '@/components/subreddit-header'

@@ -35,7 +35,7 @@ export function PostsList({
 
   return (
     <div className='h-full space-y-4'>
-      <ul className='space-y-4'>
+      <ul className='space-y-3'>
         {posts.map((post) => (
           <li key={post.id}>
             <PostCard post={post} />
