@@ -5,7 +5,9 @@ import { useSubredditStore } from '@/store/subreddits'
 import { useTheme } from 'next-themes'
 
 export default function Home() {
+  console.time('useSubredditStore')
   const { hydrated, getTopSubreddit } = useSubredditStore()
+  console.timeEnd('useSubredditStore')
 
   // wait for the store to hydrate before checking for saved subreddits
   if (!hydrated) {

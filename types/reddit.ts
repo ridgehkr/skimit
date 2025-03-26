@@ -12,6 +12,7 @@ export interface RedditPost {
   is_video: boolean
   is_gallery?: boolean
   over_18: boolean
+  thumbnail?: string
   gallery_data?: {
     items: Array<{
       media_id: string
