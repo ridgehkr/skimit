@@ -32,7 +32,7 @@ export default function SubredditPageClient({
 
   const { closeNav } = useMobileNav()
 
-  const { allowNSFW, hydrated } = useSubredditStore()
+  const { allowNSFW } = useSubredditStore()
 
   /**
    * Reset the scroll position and close the mobile nav overlay when the subreddit changes
@@ -40,7 +40,6 @@ export default function SubredditPageClient({
   useEffect(() => {
     closeNav()
 
-    // just in case the user has scrolled down the page, we want to reset the scroll position with a new subreddit
     window.scrollTo(0, 0)
   }, [closeNav])
 
@@ -103,7 +102,7 @@ export default function SubredditPageClient({
               loading={isLoading}
               loadingMore={isFetchingNextPage}
               hasMore={hasNextPage}
-              onLoadMore={() => fetchNextPage()}
+              onLoadMore={fetchNextPage}
             />
           )}
         </div>

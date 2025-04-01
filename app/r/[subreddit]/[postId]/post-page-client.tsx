@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useQuery } from '@tanstack/react-query'
 import type { RedditPost, RedditComment, CommentSortBy } from '@/types/reddit'
 import { type SubredditPostProps } from './page'
 
@@ -99,83 +100,41 @@ export default function PostPageClient({
   subreddit,
 }: SubredditPostProps) {
   const router = useRouter()
-  const [mounted, setMounted] = useState(false)
-  const [post, setPost] = useState<RedditPost | null>(null)
-  const [comments, setComments] = useState<RedditComment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadingComments, setLoadingComments] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [commentSort, setCommentSort] = useState<CommentSortBy>('best')
 
-  useEffect(() => {
-    setMounted(true)
+  // post data
+  const {
+    data: post,
+    isLoading: loadingPost,
+    error: postError,
+  } = useQuery<RedditPost>({
+    queryKey: ['post', postId],
+    queryFn: () => fetchRedditPost(postId),
+    enabled: !!postId, // Only fetch if postId is valid
+  })
 
-    window.scrollTo(0, 0) // Scroll to top on mount
-  }, [setMounted])
+  // post comments
+  const {
+    data: comments = [],
+    isLoading: loadingComments,
+    error: commentsError,
+  } = useQuery<RedditComment[]>({
+    queryKey: ['comments', postId, commentSort],
+    queryFn: () => fetchComments(postId, commentSort),
+    enabled: !!postId && !!post, // Only fetch if postId and post are valid
+  })
 
-  useEffect(() => {
-    const loadPost = async () => {
-      if (!mounted) return
-
-      setLoading(true)
-      setError(null)
-
-      try {
-        if (typeof postId !== 'string') {
-          throw new Error('Invalid postId')
-        }
-
-        const postData = await fetchRedditPost(postId)
-        if (!postData) {
-          throw new Error('Post not found')
-        }
-        setPost(postData)
-
-        setLoadingComments(true)
-        const commentsData = await fetchComments(postId, commentSort)
-        setComments(commentsData)
-        setLoadingComments(false)
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load post')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadPost()
-  }, [postId, mounted, commentSort])
-
-  useEffect(() => {
-    const loadComments = async () => {
-      try {
-        if (typeof postId !== 'string') {
-          throw new Error('Invalid postId')
-        }
-
-        const commentsData = await fetchComments(postId, commentSort)
-        setComments(commentsData)
-      } catch (error) {
-        console.error('Error loading comments:', error)
-      } finally {
-        setLoadingComments(false)
-      }
-    }
-
-    if (post && !loading) {
-      loadComments()
-    }
-  }, [postId, commentSort, post, loading, mounted])
-
-  if (!mounted) {
-    return null
-  }
-
-  if (loading) {
+  if (loadingPost) {
     return <PostDetailLoading onBack={() => router.back()} />
   }
 
-  if (error) {
-    return <PostDetailError message={error} onBack={() => router.back()} />
+  if (postError) {
+    return (
+      <PostDetailError
+        message={postError.message}
+        onBack={() => router.back()}
+      />
+    )
   }
 
   if (!post) {
