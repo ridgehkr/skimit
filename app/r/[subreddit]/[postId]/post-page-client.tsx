@@ -43,10 +43,10 @@ function CommentSection({
   const allCollapsed = collapsedComments.size > 0
 
   return (
-    <div className='mt-8'>
+    <div className='mt-8 md:scroll-mt-[calc(63px+1rem)]' id='comments'>
       <div className='grid lg:flex gap-6 items-center justify-between mb-4'>
         <div className='flex items-center gap-4'>
-          <h2 className='text-xl font-semibold'>Comments</h2>
+          <h2 className='text-xl font-semibold md:ml-2.5'>Comments</h2>
           {!loadingComments && hasComments && (
             <Button
               variant='outline'

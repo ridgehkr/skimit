@@ -225,7 +225,7 @@ export function SubredditMenu() {
             )}
           >
             <Edit2 className='h-4 w-4 mr-1' />
-            {isEditMode ? 'Done' : 'Edit'}
+            {isEditMode ? 'Done' : 'Edit Subreddits'}
           </Button>
 
           <SettingsMenu />

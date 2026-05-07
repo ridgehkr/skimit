@@ -84,10 +84,10 @@ export function PostHeader({ post }: PostHeaderProps) {
         <div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground'>
           <span>Posted by u/{post.author}</span>
           <span>{formatRedditDate(post.created_utc)}</span>
-          <div className='flex items-center gap-1'>
+          <a href="#comments" className='flex items-center gap-1 hover:underline hover:text-primary transition-colors'>
             <MessageCircle className='h-4 w-4' />
             {post.num_comments} comments
-          </div>
+          </a>
         </div>
       </div>
 
