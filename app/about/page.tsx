@@ -37,10 +37,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent className='space-y-4 pb-6 prose'>
             <p>
-              Skimit is an open-source, read-only Reddit client built for a
-              simple and uncluttered browsing experience. It lets you scroll
-              through Reddit without ads, distractions, or engagement loops—just
-              content.
+              Skimit is an open-source, read-only, quieter way to browse Reddit. Built for simplicity and without ads, distractions, or engagement prompts.
             </p>
 
             <ul className='space-y-2 list-disc pl-5'>
@@ -50,20 +47,17 @@ export default function AboutPage() {
               </li>
               <li>
                 <strong>Minimal & Fast:</strong> Lightweight and free of
-                unnecessary UI elements.
+                bloated UI features.
               </li>
               <li>
                 <strong>Ad-Free & Open-Source:</strong> No ads, no tracking, and
                 open for community contributions.
               </li>
               <li>
-                <strong>Privacy-Focused:</strong> No data collection, just a
+                <strong>Privacy-Focused:</strong> No data collection or tracking, just a
                 direct way to read Reddit.
               </li>
             </ul>
-            <p>
-              Skimit is for anyone who wants a quieter way to browse Reddit.
-            </p>
           </CardContent>
         </Card>
       </div>
