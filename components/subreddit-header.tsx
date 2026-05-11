@@ -1,7 +1,8 @@
 'use client'
 
 import { SubredditInfo } from '@/types/reddit'
-import { formatRedditDate } from '@/lib/utils/reddit-date'
+import { formatRedditDate } from '@/lib/utils/date'
+import { formatNumber } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Users, Clock, Calendar } from 'lucide-react'
 import Image from 'next/image'
@@ -12,11 +13,7 @@ interface SubredditHeaderProps {
   error: string | null
 }
 
-export function SubredditHeader({
-  info,
-  loading,
-  error,
-}: SubredditHeaderProps) {
+export function SubredditHeader({ info, loading, error }: SubredditHeaderProps) {
   if (loading) {
     return (
       <div className='space-y-4'>
@@ -84,18 +81,14 @@ export function SubredditHeader({
         <div className='flex items-center gap-2'>
           <Users className='h-4 w-4' />
           <span className='text-sm md:text-base inline-flex gap-1 white-space-nowrap'>
-            <span className='font-medium'>
-              {formatNumber(info.subscribers)}
-            </span>
+            <span className='font-medium'>{formatNumber(info.subscribers)}</span>
             <span className='text-muted-foreground'>members</span>
           </span>
         </div>
         <div className='flex items-center gap-2'>
           <Clock className='h-4 w-4' />
           <span className='text-sm md:text-base white-space-nowrap inline-flex gap-1'>
-            <span className='font-medium'>
-              {formatNumber(info.active_user_count)}
-            </span>
+            <span className='font-medium'>{formatNumber(info.active_user_count)}</span>
             <span className='text-muted-foreground'>online</span>
           </span>
         </div>
@@ -108,15 +101,4 @@ export function SubredditHeader({
       </div>
     </div>
   )
-}
-
-// Helper function to format numbers
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`
-  }
-  if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`
-  }
-  return (num ?? 0).toString()
 }

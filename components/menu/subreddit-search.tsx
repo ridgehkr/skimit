@@ -17,11 +17,12 @@ import {
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatNumber } from '@/lib/utils'
 import Image from 'next/image'
 import debounce from 'lodash/debounce'
 import { useSubredditStore } from '@/store/subreddits'
 import { useRouter } from 'next/navigation'
-import { useAutocompleteSuggestions } from '@/lib/reddit'
+import { useAutocompleteSuggestions } from '@/hooks/use-autocomplete'
 import { type SubredditSuggestion } from '@/types/reddit'
 
 interface SubredditSearchProps {
@@ -29,9 +30,6 @@ interface SubredditSearchProps {
   setIsOpen: (open: boolean) => void
 }
 
-/**
- * Displays a modal for searching for and adding new subreddits to the saved subreddits list.
- */
 export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [debouncedSearchString, setDebouncedSearchString] = useState('')
@@ -40,7 +38,6 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
 
   const allowNSFW = useSubredditStore((state) => state.allowNSFW)
 
-  // subreddit autocomplete suggestions
   const { data: suggestions = [], isLoading } = useAutocompleteSuggestions(
     debouncedSearchString,
     subreddits,
@@ -49,28 +46,11 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
   )
 
   useEffect(() => {
-    if (!suggestions.length) return
+    if (!isOpen) setSelectedIndex(-1)
+  }, [isOpen])
 
-    console.log(suggestions[0])
-  }, [suggestions])
-
-  // when the search modal is closed, reset the search suggestion selected index
-  useEffect(() => {
-    if (!open) {
-      setSelectedIndex(-1)
-    }
-  }, [open, setSelectedIndex])
-
-  /**
-   * Add a subreddit to the saved subreddits list and redirect to it
-   *
-   * @param subredditName - The name of the subreddit to save (does not include the /r/ prefix)
-   * @return {void}
-   */
   const handleSubredditSearchSubmit = (subredditName: string) => {
     setIsOpen(false)
-
-    // notify the user
     toast('Subreddit Saved', {
       description: `r/${subredditName} added to your saved subreddits.`,
       action: {
@@ -80,11 +60,6 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
     })
   }
 
-  /**
-   * Debounce the search input to avoid excessive API calls
-   * @param {string} value - The current value of the search input
-   * @returns {void}
-   */
   const debouncedSetSearchString = useCallback(
     debounce((value: string) => {
       setDebouncedSearchString(value)
@@ -92,43 +67,23 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
     []
   )
 
-  /**
-   * Handle search input change with debouncing
-   *
-   * @param value - The current value of the search input
-   * @returns {void}
-   */
   const handleSearchInputChange = (value: string) => {
     debouncedSetSearchString(value)
   }
 
-  /**
-   * Select a subreddit from the suggestions list
-   * @param {string} value - The name of the subreddit
-   */
   const handleSelect = (value: string) => {
-    console.log({ suggestions })
-
     const selectedSubreddit = suggestions.find(
       (s: SubredditSuggestion) => s.name.toLowerCase() === value.toLowerCase()
     )
     if (selectedSubreddit) {
-      // Save the subreddit with its icon
       addSubreddit({
         name: selectedSubreddit.name,
         iconUrl: selectedSubreddit.icon_img,
       })
-
-      // Update the parent component
       handleSubredditSearchSubmit(selectedSubreddit.name)
     }
   }
 
-  /**
-   * Handle keyboard up, down, and selection navigation for the search suggestions list
-   *
-   * @param {KeyboardEvent<HTMLDivElement>} e - The keyboard event
-   */
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -142,22 +97,6 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
       e.preventDefault()
       handleSelect(suggestions[selectedIndex].name)
     }
-  }
-
-  /**
-   * Format the subscriber count for a more readable appearance
-   *
-   * @param {number} count - The number of subscribers
-   * @returns {string} - The formatted subscriber count
-   */
-  const formatSubscribers = (count: number): string => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M subscribers`
-    }
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K subscribers`
-    }
-    return `${count} subscribers`
   }
 
   return (
@@ -215,7 +154,6 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
                   <div className='flex flex-col'>
                     <div className='flex items-center gap-2'>
                       <span className='font-medium'>r/{suggestion.name}</span>
-
                       {suggestion.over18 && (
                         <span className='text-xs text-muted-foreground inline-flex items-center gap-2'>
                           {'•'}
@@ -224,7 +162,7 @@ export function SubredditSearch({ isOpen, setIsOpen }: SubredditSearchProps) {
                       )}
                     </div>
                     <span className='text-xs text-muted-foreground'>
-                      {formatSubscribers(suggestion.subscribers)}
+                      {formatNumber(suggestion.subscribers)} subscribers
                     </span>
                   </div>
                 </CommandItem>

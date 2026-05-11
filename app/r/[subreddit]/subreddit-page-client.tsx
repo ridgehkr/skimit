@@ -16,59 +16,38 @@ import type { SortBy } from '@/types/reddit'
 import { useMobileNav } from '@/store/nav'
 import { useSubredditStore } from '@/store/subreddits'
 import { useSubreddit } from '@/hooks/use-subreddit'
+import { useSubredditInfo } from '@/hooks/use-subreddit-info'
 
 interface SubredditPageClientProps {
   subreddit: string
 }
 
-/**
- * Displays a subreddit page with a list of posts, a subreddit header, and a post sorting option.
- */
-export default function SubredditPageClient({
-  subreddit,
-}: SubredditPageClientProps) {
-  // local state for the post sorting value
+export default function SubredditPageClient({ subreddit }: SubredditPageClientProps) {
   const [sortBy, setSortBy] = useState<SortBy>('hot')
-
   const { closeNav } = useMobileNav()
-
   const { allowNSFW } = useSubredditStore()
 
-  /**
-   * Reset the scroll position and close the mobile nav overlay when the subreddit changes
-   */
   useEffect(() => {
     closeNav()
-
     window.scrollTo(0, 0)
   }, [closeNav])
 
-  const {
-    posts,
-    subredditInfo,
-    error,
-    isLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = useSubreddit(subreddit, {
-    sortBy,
-    allowNSFW,
-  })
+  const { posts, error, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useSubreddit(subreddit, { sortBy, allowNSFW })
+
+  const { data: subredditInfo, isLoading: loadingInfo } = useSubredditInfo(subreddit)
 
   return (
     <div>
       <div className='flex flex-col h-full p-0'>
         <div className='grid gap-6 lg:flex items-center justify-between md:ml-3.5 py-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:top-16 z-40'>
           <SubredditHeader
-            info={subredditInfo}
-            loading={isLoading}
+            info={subredditInfo ?? null}
+            loading={loadingInfo}
             error={error ? error.message : null}
           />
           <div className='flex items-center gap-2'>
-            <span className='text-sm font-medium whitespace-nowrap'>
-              Sort by
-            </span>
+            <span className='text-sm font-medium whitespace-nowrap'>Sort by</span>
             <Select
               value={sortBy}
               onValueChange={(value) => setSortBy(value as SortBy)}

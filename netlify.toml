@@ -1,11 +1,15 @@
 [build]
-  command = "npm run build"
+  command = "pnpm build"
   publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "9"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
 [[headers]]
-  for = "/_next/static/*"
+  for = "/_next/static/**"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"

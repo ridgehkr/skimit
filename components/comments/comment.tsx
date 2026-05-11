@@ -5,7 +5,7 @@ import { CommentReplies } from './comment-replies'
 import { MarkdownContent } from '@/components/markdown-content'
 import { useComments } from '@/lib/contexts/comment-context'
 import { cn } from '@/lib/utils'
-import { formatRedditDate } from '@/lib/utils/reddit-date'
+import { formatRedditDate } from '@/lib/utils/date'
 
 interface CommentProps {
   comment: RedditComment

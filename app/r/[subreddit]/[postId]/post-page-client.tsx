@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
-import { fetchRedditPost, fetchComments } from '@/lib/reddit'
+import { usePost, usePostComments } from '@/hooks/use-post'
 import { CommentList } from '@/components/comments/comment-list'
 import { PostHeader } from '@/components/post-detail/post-header'
 import { PostContent } from '@/components/post-detail/post-content'
@@ -20,8 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useQuery } from '@tanstack/react-query'
-import type { RedditPost, RedditComment, CommentSortBy } from '@/types/reddit'
+import type { CommentSortBy } from '@/types/reddit'
 import { type SubredditPostProps } from './page'
 
 interface CommentSectionProps {
@@ -102,27 +101,8 @@ export default function PostPageClient({
   const router = useRouter()
   const [commentSort, setCommentSort] = useState<CommentSortBy>('best')
 
-  // post data
-  const {
-    data: post,
-    isLoading: loadingPost,
-    error: postError,
-  } = useQuery<RedditPost>({
-    queryKey: ['post', postId],
-    queryFn: () => fetchRedditPost(postId),
-    enabled: !!postId, // Only fetch if postId is valid
-  })
-
-  // post comments
-  const {
-    data: comments = [],
-    isLoading: loadingComments,
-    error: commentsError,
-  } = useQuery<RedditComment[]>({
-    queryKey: ['comments', postId, commentSort],
-    queryFn: () => fetchComments(postId, commentSort),
-    enabled: !!postId && !!post, // Only fetch if postId and post are valid
-  })
+  const { data: post, isLoading: loadingPost, error: postError } = usePost(postId)
+  const { data: comments = [], isLoading: loadingComments } = usePostComments(postId, commentSort)
 
   if (loadingPost) {
     return <PostDetailLoading onBack={() => router.back()} />

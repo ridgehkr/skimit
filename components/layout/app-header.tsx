@@ -1,9 +1,8 @@
 'use client'
 
-import { Menu, Settings } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useMobileNav } from '@/store/nav'
-import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
   SheetContent,
@@ -12,34 +11,26 @@ import {
 } from '@/components/ui/sheet'
 import { SubredditMenu } from '@/components/menu/subreddit-menu'
 import { SiteMeta } from '@/components/menu/site-meta'
-import { useState, useEffect } from 'react'
+import { Separator } from '@/components/ui/separator'
 import { useSubredditStore } from '@/store/subreddits'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { SettingsMenu } from '@/components/menu/settings-menu'
-// import { LoginButton } from '@/components/auth/login-button'
+import { useMounted } from '@/hooks/use-mounted'
 
 export function AppHeader() {
   const { openNav, isOpen, closeNav } = useMobileNav()
   const { theme, systemTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
 
-  // Get the effective theme (system or user-selected)
   const currentTheme = theme === 'system' ? systemTheme : theme
   const isDark = currentTheme === 'dark'
 
-  // Find the top favorite subreddit to use as the logo target, or default to /r/all
   const { hydrated, getTopSubreddit } = useSubredditStore()
   const top = hydrated ? getTopSubreddit()?.name ?? 'all' : 'all'
   const logoTarget = `/r/${top}`
 
-  useEffect(() => {
-    setMounted(true)
-  }, [setMounted])
-
-  if (!mounted) {
-    return null // Prevent hydration mismatch
-  }
+  if (!mounted) return null
 
   return (
     <header className='h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative md:sticky top-0 left-0 right-0 z-20'>
@@ -50,7 +41,6 @@ export function AppHeader() {
         </Link>
 
         <div className='inline-flex items-center gap-4'>
-          {/* Mobile menu button */}
           <Button
             variant='secondary'
             className='md:hidden'

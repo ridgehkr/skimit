@@ -8,13 +8,9 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-    domains: ['skimit.app'],
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   trailingSlash: true,
   productionBrowserSourceMaps: true,

@@ -1,13 +1,12 @@
 'use client'
 
 import { RedditPost } from '@/types/reddit'
-import { formatRedditDate } from '@/lib/utils/reddit-date'
+import { formatRedditDate } from '@/lib/utils/date'
+import { getPostType, getThumbnail } from '@/lib/utils/post'
 import { Card, CardContent } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  ArrowUpIcon,
-  ArrowDownIcon,
   MessageCircle,
   Image as ImageIcon,
   Link as LinkIcon,
@@ -20,72 +19,19 @@ interface PostCardProps {
   post: RedditPost
 }
 
-/**
- * Determine the type of Reddit post based on its populated properties
- * @param {RedditPost} post - The Reddit post object
- * @returns - An object containing the icon and label for the post type
- */
-function getPostType(post: RedditPost) {
-  if (post.is_gallery) {
-    return { icon: Images, label: 'Gallery' }
+function getTypeDisplay(post: RedditPost) {
+  const type = getPostType(post)
+  switch (type) {
+    case 'gallery': return { icon: Images, label: 'Gallery' }
+    case 'video':   return { icon: VideoIcon, label: 'Video' }
+    case 'image':   return { icon: ImageIcon, label: 'Image' }
+    case 'text':    return { icon: FileText, label: 'Text' }
+    default:        return { icon: LinkIcon, label: 'Link' }
   }
-  if (post.is_video) {
-    return { icon: VideoIcon, label: 'Video' }
-  }
-  if (post.url.match(/\.(jpg|jpeg|png|gif)$/i)) {
-    return { icon: ImageIcon, label: 'Image' }
-  }
-  if (post.selftext) {
-    return { icon: FileText, label: 'Text' }
-  }
-  return { icon: LinkIcon, label: 'Link' }
 }
 
-/**
- * Get the thumbnail image for a Reddit post
- * @param {RedditPost} post - The Reddit post object
- * @returns - The URL of the thumbnail image, or null if not found
- */
-function getThumbnail(post: RedditPost): string | null {
-  // First try to get the preview image
-  if (post.preview?.images[0]?.resolutions) {
-    // Get the medium size image if available, otherwise the smallest
-    const resolutions = post.preview.images[0].resolutions
-    const mediumImage = resolutions[Math.min(2, resolutions.length - 1)]
-    if (mediumImage?.url) {
-      return mediumImage.url.replace(/&amp;/g, '&')
-    }
-  }
-
-  // For gallery posts, try to get the first image
-  if (post.is_gallery && post.gallery_data?.items[0]?.media_id) {
-    const mediaId = post.gallery_data.items[0].media_id
-    const mediaItem = post.media_metadata?.[mediaId]
-
-    if (mediaItem && 'p' in mediaItem && Array.isArray(mediaItem.p)) {
-      // Get the medium size if available, otherwise the smallest
-      const preview = mediaItem.p[Math.min(2, mediaItem.p.length - 1)]
-      if (preview?.u) {
-        return preview.u.replace(/&amp;/g, '&')
-      }
-    }
-  }
-
-  // If it's a direct image URL
-  if (post.url.match(/\.(jpg|jpeg|png|gif)$/i)) {
-    return post.url
-  }
-
-  return null
-}
-
-/**
- * Display a Reddit post excerpt in a card format
- * @param post - The Reddit post object
- * @returns - A card component displaying the post excerpt
- */
 export function PostCard({ post }: PostCardProps) {
-  const { icon: TypeIcon, label: typeLabel } = getPostType(post)
+  const { icon: TypeIcon, label: typeLabel } = getTypeDisplay(post)
   const thumbnail = getThumbnail(post)
 
   return (

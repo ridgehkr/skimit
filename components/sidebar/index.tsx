@@ -26,8 +26,8 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        'z-20 hidden md:flex h-[calc(100vh-4rem)] flex-col fixed left-0 top-16 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300',
-        isOpen ? 'w-[300px]' : 'w-8'
+        'z-20 hidden md:flex h-[calc(100vh-4rem)] flex-col fixed left-0 top-16 bottom-0 border-r bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-all duration-300',
+        isOpen ? 'w-62 lg:w-75' : 'w-8'
       )}
     >
       <TooltipProvider>

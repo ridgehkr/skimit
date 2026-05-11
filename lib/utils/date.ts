@@ -1,4 +1,3 @@
-// Base date formatting utility
 export function formatDate(timestamp: number): string {
   const date = new Date(timestamp * 1000);
   const now = new Date();
@@ -19,3 +18,5 @@ export function formatDate(timestamp: number): string {
     return date.toLocaleDateString();
   }
 }
+
+export const formatRedditDate = formatDate

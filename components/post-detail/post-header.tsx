@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { formatRedditDate } from '@/lib/utils/reddit-date'
+import { formatRedditDate } from '@/lib/utils/date'
+import { getGalleryImages } from '@/lib/utils/post'
 import { CardHeader } from '@/components/ui/card'
 import { MessageCircle, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,27 +19,6 @@ import { RedditPost } from '@/types/reddit'
 
 interface PostHeaderProps {
   post: RedditPost
-}
-
-function getGalleryImages(post: RedditPost): string[] {
-  if (!post.is_gallery || !post.gallery_data || !post.media_metadata) {
-    return []
-  }
-
-  return post.gallery_data.items
-    .map((item) => {
-      const metadata = post.media_metadata?.[item.media_id]
-      if (!metadata || metadata.status !== 'valid') return null
-
-      // Get the highest quality image URL
-      const imageUrl =
-        metadata.s?.u || // First try the full size image
-        metadata.p?.[metadata.p.length - 1]?.u // Fall back to the largest preview
-
-      // Reddit serves these URLs with HTML entities, need to decode them
-      return imageUrl ? imageUrl.replace(/&amp;/g, '&') : null
-    })
-    .filter((url): url is string => url !== null)
 }
 
 export function PostHeader({ post }: PostHeaderProps) {
