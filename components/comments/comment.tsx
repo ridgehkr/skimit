@@ -25,7 +25,6 @@ export function Comment({ comment, isTopLevel = false }: CommentProps) {
       className={cn(
         'rounded-lg',
         isTopLevel && 'px-3 py-3 bg-muted/50 dark:bg-muted/30',
-        (!isTopLevel || collapsed) && 'border p-3'
       )}
       data-comment-id={comment.id}
     >

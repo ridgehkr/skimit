@@ -106,3 +106,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@utility prose-markdown {
+  h2 {
+    @apply text-lg md:text-xl lg:text-2xl font-semibold;
+
+    &:not(:first-child) {
+      margin-block: 1.125em 0.25em;
+    }
+  }
+  p {
+    line-height: 1.5;
+  }
+}

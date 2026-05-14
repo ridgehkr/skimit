@@ -111,7 +111,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
 
   return (
     <div
-      className='prose dark:prose-invert max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-a:underline [&_a]:underline text-pretty overflow-hidden text-ellipsis [&_a]:overflow-hidden [&_a]:whitespace-nowrap [&_a]:text-pretty'
+      className='prose prose-markdown dark:prose-invert max-w-none text-base md:text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-a:underline [&_a]:underline text-pretty overflow-hidden text-ellipsis [&_a]:overflow-hidden [&_a]:whitespace-nowrap [&_a]:text-pretty'
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   )
