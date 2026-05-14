@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { formatRedditDate } from '@/lib/utils/date'
 import { getGalleryImages } from '@/lib/utils/post'
 import { CardHeader } from '@/components/ui/card'
-import { MessageCircle, ExternalLink } from 'lucide-react'
+import { MessageCircle, ExternalLink, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Carousel,
@@ -51,6 +51,15 @@ export function PostHeader({ post }: PostHeaderProps) {
           {isLink ? (
             <a
               href={post.url}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='hover:underline hover:text-primary transition-colors'
+            >
+              {post.title}
+            </a>
+          ) : isVideo ? (
+            <a
+              href={`https://www.reddit.com${post.permalink}`}
               target='_blank'
               rel='noopener noreferrer'
               className='hover:underline hover:text-primary transition-colors'
@@ -130,15 +139,36 @@ export function PostHeader({ post }: PostHeaderProps) {
       )}
 
       {isVideo && (
-        <div className='w-full max-w-[800px] mx-auto'>
-          <div className='aspect-[16/9] relative bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden'>
-            <video
-              controls
-              src={post?.media?.reddit_video?.fallback_url}
-              className='absolute inset-0 w-full h-full'
-              preload='metadata'
-            />
-          </div>
+        <div className='w-full max-w-200 mx-auto'>
+          <a
+            href={`https://www.reddit.com${post.permalink}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='block group'
+          >
+            <div className='aspect-video relative bg-black/10 dark:bg-white/10 rounded-lg overflow-hidden flex items-center justify-center'>
+              {post.preview?.images[0]?.source?.url ? (
+                <img
+                  src={post.preview.images[0].source.url.replace(/&amp;/g, '&')}
+                  alt={post.title}
+                  className='absolute inset-0 w-full h-full object-cover'
+                />
+              ) : post.thumbnail && !['default', 'self', 'nsfw', 'spoiler'].includes(post.thumbnail) ? (
+                <img
+                  src={post.thumbnail}
+                  alt={post.title}
+                  className='absolute inset-0 w-full h-full object-cover'
+                />
+              ) : null}
+              <div className='relative z-10 flex flex-col items-center gap-2 bg-black/50 group-hover:bg-black/60 transition-colors rounded-full p-5'>
+                <Play className='h-10 w-10 text-white fill-white' />
+              </div>
+            </div>
+            <p className='mt-2 flex gap-1 items-center justify-center text-sm text-muted-foreground text-center'>
+              Watch on Reddit
+              <ExternalLink className='inline-block h-4 w-4 ml-1' aria-label="External link" />
+            </p>
+          </a>
         </div>
       )}
     </CardHeader>
